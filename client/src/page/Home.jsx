@@ -36,45 +36,45 @@ const VideoTo3D = () => {
 
     const handleConvert = async () => {
 
-        // const logtime = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        const logtime = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-        // if (!file) {
-        //     message.error("Please upload a video first");
-        //     return;
-        // }
+        if (!file) {
+            message.error("Please upload a video first");
+            return;
+        }
 
-        // const formData = new FormData();
-        // formData.append("video", file);
+        const formData = new FormData();
+        formData.append("video", file);
 
 
-        // try {
-        //     setLoading(true);
+        try {
+            setLoading(true);
 
-        //     await logtime(18);
+            await logtime(18);
 
-        //     const response = await axios.post(
-        //         "http://localhost:5000/api/model3dRouter/upload",
-        //         formData,
-        //         {
-        //             headers: { "Content-Type": "multipart/form-data" },
-        //         }
-        //     );
+            const response = await axios.post(
+                "http://localhost:5000/api/model3dRouter/upload",
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
 
-        //     const newVideo = {
-        //         ...response.data,
-        //         key: response.data.id || Date.now(),
-        //         link_video_full: `/videos/${response.data.link_video}`,
-        //         link_3d_full: `/plys/${response.data.link_3d}`,
-        //     };
+            const newVideo = {
+                ...response.data,
+                key: response.data.id || Date.now(),
+                link_video_full: `/videos/${response.data.link_video}`,
+                link_3d_full: `/plys/${response.data.link_3d}`,
+            };
 
-        //     message.success("Video uploaded successfully");
-        //     setVideos([...videos, newVideo]);
-        // } catch (error) {
-        //     message.error("Failed to upload video");
-        //     console.error(error);
-        // } finally {
-        //     setLoading(false);
-        // }
+            message.success("Video uploaded successfully");
+            setVideos([...videos, newVideo]);
+        } catch (error) {
+            message.error("Failed to upload video");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDownload = (filePath, fileName) => {
