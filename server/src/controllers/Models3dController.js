@@ -6,14 +6,33 @@ const fs = require("fs").promises;
 const path = require("path");
 const fsSync = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
+const { config } = require("dotenv");
+const { clearScreenDown } = require("readline");
 const uploadStatus = {};
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const getWithIdUser = async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ status: "ERR", message: "Unauthorized" });
+    }
+
+    const googleToken = authHeader.split(" ")[1];
+
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
     let [obj] = await pool.execute(
-      "SELECT * FROM models3d WHERE users_id = ?",
-      [1]
+      "SELECT * FROM models3d WHERE users_email = ?",
+      [email]
     );
+
     return res.status(200).json({ status: "OK", data: obj });
   } catch (e) {
     console.error(e);
@@ -41,11 +60,7 @@ async function convertPlyFileWithStream(sourcePath, destPath) {
       });
 
       writeStream.on("finish", () => {
-        console.log(
-          `File .ply đã được sao chép thành công thành ${path.basename(
-            destPath
-          )}`
-        );
+        console.log(`thành công ${path.basename(destPath)}`);
         resolve();
       });
 
@@ -116,10 +131,24 @@ const upload = async (req, res) => {
     const destPath = path.join(destDir, plyFilename);
 
     await convertPlyFileWithStream(sourcePath, destPath);
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ status: "ERR", message: "Unauthorized" });
+    }
+
+    const googleToken = authHeader.split(" ")[1];
+
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
 
     let [obj] = await pool.execute(
-      "INSERT INTO models3d (users_id, link_video, link_3d) VALUES (?, ?, ?)",
-      [req.body.users_id || 1, videoFilename, plyFilename]
+      "INSERT INTO models3d (users_email, link_video, link_3d) VALUES (?, ?, ?)",
+      [email, videoFilename, plyFilename]
     );
 
     const result = {
@@ -150,7 +179,7 @@ const getVideoInfo = (filePath) => {
       if (err) {
         return reject(err);
       }
-      const duration = metadata.format.duration; // Thời gian video (giây)
+      const duration = metadata.format.duration;
       const videoStream = metadata.streams.find(
         (s) => s.codec_type === "video"
       );

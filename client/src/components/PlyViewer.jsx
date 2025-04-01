@@ -35,14 +35,12 @@ const PlyViewer = ({ plyPath }) => {
 
                 let material;
                 if (geometry.attributes.color) {
-                    console.log('File .ply có màu đỉnh!');
                     material = new THREE.MeshPhongMaterial({
                         vertexColors: true,
                         specular: 0x555555,
                         shininess: 50,
                     });
                 } else {
-                    console.log('File .ply không có màu đỉnh, dùng màu mặc định.');
                     material = new THREE.MeshPhongMaterial({
                         color: 0xaaaaaa,
                         specular: 0x555555,

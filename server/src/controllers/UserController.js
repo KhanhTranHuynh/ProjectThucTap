@@ -43,7 +43,7 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ status: "OK", message: "Đăng nhập thành công", token, user });
   } catch (e) {
-    console.log(e);
+    e;
     return res.status(500).json({ status: "ERR", message: e.message });
   }
 };

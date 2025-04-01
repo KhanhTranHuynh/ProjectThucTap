@@ -1,4 +1,3 @@
-// const { Sequelize } = require("@sequelize/core");
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize({
@@ -13,7 +12,7 @@ const sequelize = new Sequelize({
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
+    ("Connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }

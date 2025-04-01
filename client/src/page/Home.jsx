@@ -1,157 +1,69 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Upload, Button, Table, message, Spin } from "antd";
-import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import React from "react";
+import { Card, Typography, Button, Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const VideoTo3D = () => {
-    const [videos, setVideos] = useState([]);
-    const [file, setFile] = useState(null);
-    const [loading, setLoading] = useState(false);
+const { Title, Paragraph } = Typography;
 
-    useEffect(() => {
-        axios
-            .get("http://localhost:5000/api/model3dRouter/getWithIdUser")
-            .then((response) => {
-                if (response.data.status === "OK") {
-                    setVideos(
-                        response.data.data.map((item) => ({
-                            key: item.id,
-                            id: item.id,
-                            users_id: item.users_id,
-                            link_video: item.link_video,
-                            link_3d: item.link_3d,
-                            link_video_full: `/videos/${item.link_video}`,
-                            link_3d_full: `/plys/${item.link_3d}`,
-                        }))
-                    );
-                }
-            })
-            .catch(() => message.error("Failed to fetch videos"));
-    }, []);
+const HomePage = () => {
+    const navigate = useNavigate();
 
-    const handleUpload = (info) => {
-        setFile(info.file);
-        message.success(`${info.file.name} selected for upload`);
-    };
+    return (
+        <div style={{ padding: "50px", maxWidth: "1200px", margin: "0 auto" }}>
+            <Card style={{ textAlign: "center", marginBottom: "30px" }}>
+                <Title level={2}>Chào Mừng Đến Với My App!</Title>
+                <Paragraph>
+                    Đây là ứng dụng giúp bạn quản lý thông tin cá nhân, liên hệ với chúng
+                    tôi, và xem các hướng dẫn sử dụng. Khám phá ngay các tính năng bên
+                    dưới!
+                </Paragraph>
+            </Card>
 
-    const handleConvert = async () => {
+            <Row gutter={[16, 16]}>
+                <Col xs={24} sm={12} md={8}>
+                    <Card
+                        title="Hồ Sơ Cá Nhân"
+                        hoverable
+                        style={{ textAlign: "center" }}
+                        onClick={() => navigate("/profile")}
+                    >
+                        <Paragraph>Xem và chỉnh sửa thông tin cá nhân của bạn.</Paragraph>
+                        <Button type="primary">Đi đến Profile</Button>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Card
+                        title="Liên Hệ"
+                        hoverable
+                        style={{ textAlign: "center" }}
+                        onClick={() => navigate("/contact")}
+                    >
+                        <Paragraph>Gửi tin nhắn cho chúng tôi nếu cần hỗ trợ.</Paragraph>
+                        <Button type="primary">Đi đến Contact</Button>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Card
+                        title="Hướng Dẫn"
+                        hoverable
+                        style={{ textAlign: "center" }}
+                        onClick={() => navigate("/instruct")}
+                    >
+                        <Paragraph>Xem hướng dẫn sử dụng ứng dụng chi tiết.</Paragraph>
+                        <Button type="primary">Đi đến Instruct</Button>
+                    </Card>
+                </Col>
+            </Row>
 
-        const logtime = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-        if (!file) {
-            message.error("Please upload a video first");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("video", file);
-
-
-        try {
-            setLoading(true);
-
-            await logtime(18);
-
-            const response = await axios.post(
-                "http://localhost:5000/api/model3dRouter/upload",
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-
-            const newVideo = {
-                ...response.data,
-                key: response.data.id || Date.now(),
-                link_video_full: `/videos/${response.data.link_video}`,
-                link_3d_full: `/plys/${response.data.link_3d}`,
-            };
-
-            message.success("Video uploaded successfully");
-            setVideos([...videos, newVideo]);
-        } catch (error) {
-            message.error("Failed to upload video");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDownload = (filePath, fileName) => {
-        const link = document.createElement("a");
-        link.href = filePath;
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const columns = [
-        { title: "ID", dataIndex: "id", key: "id" },
-        { title: "User ID", dataIndex: "users_id", key: "users_id" },
-        { title: "Video Link", dataIndex: "link_video", key: "link_video" },
-        {
-            title: "Download Video",
-            dataIndex: "link_video",
-            key: "download_video",
-            render: (text, record) => (
-                <Button
-                    icon={<DownloadOutlined />}
-                    onClick={() => handleDownload(record.link_video_full, text)}
-                >
-                    Download
-                </Button>
-            ),
-        },
-        {
-            title: "3D Model Link",
-            dataIndex: "link_3d",
-            key: "link_3d",
-            render: (text) => (
-                <a href={`/viewer/${text}`} target="_blank" rel="noopener noreferrer">
-                    {text}
-                </a>
-            ),
-        },
-        {
-            title: "Download PLY",
-            dataIndex: "link_3d",
-            key: "download_ply",
-            render: (text, record) => (
-                <Button
-                    icon={<DownloadOutlined />}
-                    onClick={() => handleDownload(record.link_3d_full, text)}
-                >
-                    Download
-                </Button>
-            ),
-        },
-    ];
-
-    return <
-        div style={{ padding: 20 }}>
-        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-            <Upload beforeUpload={() => false} onChange={handleUpload}>
-                <Button icon={<UploadOutlined />}>Upload Video</Button>
-            </Upload>
-            <Button
-                type="primary"
-                icon={<VideoCameraOutlined />}
-                onClick={handleConvert}
-                disabled={loading}
-            >
-                Convert Video to 3D
-            </Button>
+            <Card style={{ marginTop: "30px", textAlign: "center" }}>
+                <Title level={3}>Về Chúng Tôi</Title>
+                <Paragraph>
+                    My App được thiết kế để mang lại trải nghiệm tốt nhất cho người dùng.
+                    Chúng tôi luôn sẵn sàng hỗ trợ bạn qua trang Contact hoặc email:
+                    support@myapp.com.
+                </Paragraph>
+            </Card>
         </div>
-
-        {loading && (
-            <div style={{ textAlign: "center", marginBottom: 20 }}>
-                <Spin tip="Converting video to 3D, please wait..." size="large" />
-            </div>
-        )}
-
-        <Table columns={columns} dataSource={videos} />
-    </div>;
+    );
 };
 
-export default VideoTo3D;
+export default HomePage;

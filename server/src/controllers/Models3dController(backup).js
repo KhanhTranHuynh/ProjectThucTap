@@ -41,11 +41,7 @@ async function convertPlyFileWithStream(sourcePath, destPath) {
       });
 
       writeStream.on("finish", () => {
-        console.log(
-          `File .ply đã được sao chép thành công thành ${path.basename(
-            destPath
-          )}`
-        );
+        `công thành ${path.basename(destPath)}`;
         resolve();
       });
 

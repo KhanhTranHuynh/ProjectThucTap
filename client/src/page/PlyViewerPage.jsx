@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import PlyViewer from './PlyViewer';
+import PlyViewer from '../components/PlyViewer';
 
 const PlyViewerPage = () => {
     const { plyFileName } = useParams();
