@@ -25,7 +25,7 @@ const AppFooter = () => {
                     <Text strong style={{ color: "#fff", fontSize: "16px" }}>
                         Liên Kết Nhanh
                     </Text>
-                    <Space direction="vertical" style={{ marginTop: "10px" }}>
+                    <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
                         <Link
                             onClick={() => navigate("/")}
                             style={{ color: "#d9d9d9" }}
@@ -61,12 +61,12 @@ const AppFooter = () => {
                     <Text strong style={{ color: "#fff", fontSize: "16px" }}>
                         Liên Hệ
                     </Text>
-                    <Space direction="vertical" style={{ marginTop: "10px" }}>
+                    <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
                         <Text style={{ color: "#d9d9d9" }}>
-                            <MailOutlined /> Email: support@myapp.com
+                            <MailOutlined /> Email: khanhtranhuynh9@gmail.com
                         </Text>
                         <Text style={{ color: "#d9d9d9" }}>
-                            <PhoneOutlined /> Phone: +84 123 456 789
+                            <PhoneOutlined /> Phone: (+84) 868 333 224
                         </Text>
                     </Space>
                 </Col>
@@ -75,12 +75,12 @@ const AppFooter = () => {
                     <Text strong style={{ color: "#fff", fontSize: "16px" }}>
                         Về Chúng Tôi
                     </Text>
-                    <Space direction="vertical" style={{ marginTop: "10px" }}>
+                    <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
                         <Text style={{ color: "#d9d9d9" }}>
-                            My App - Ứng dụng quản lý thông tin cá nhân.
+                            SeaShip - Hệ thống chuyển đổi Video thành mô hình 3D.
                         </Text>
                         <Text style={{ color: "#d9d9d9" }}>
-                            © {new Date().getFullYear()} My App. All rights reserved.
+                            © {new Date().getFullYear()} SeaShip. All rights reserved.
                         </Text>
                     </Space>
                 </Col>

@@ -70,7 +70,35 @@ const getUser = async (req, res) => {
   }
 };
 
+const getUserRole = async (req, res) => {
+  const { token } = req.query;
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+
+  try {
+    const [rows] = await pool.execute(
+      "SELECT role FROM users WHERE email = ?",
+      [payload.email]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userRole = rows[0].role;
+    return res.status(200).json({ role: userRole });
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getUser,
   loginUser,
+  getUserRole,
 };

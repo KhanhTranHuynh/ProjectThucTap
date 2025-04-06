@@ -70,9 +70,11 @@ const HomePage = () => {
             <Card style={{ marginTop: "30px", textAlign: "center" }}>
                 <Title level={3}>Về Chúng Tôi</Title>
                 <Paragraph>
-                    My App được thiết kế để mang lại trải nghiệm tốt nhất cho người dùng.
+                    SeaShip được thiết kế để mang lại trải nghiệm tốt nhất cho người dùng.
+                </Paragraph>
+                <Paragraph>
                     Chúng tôi luôn sẵn sàng hỗ trợ bạn qua trang Contact hoặc email:
-                    <b>khanhtranhuynh9@gmail.com</b>.
+                    <b> khanhtranhuynh9@gmail.com</b>.
                 </Paragraph>
             </Card>
         </div>

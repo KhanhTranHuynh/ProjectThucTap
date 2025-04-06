@@ -22,5 +22,5 @@ const initWebroute = require("./route/index");
 initWebroute(app);
 
 app.listen(port, () => {
-  "server run with port " + port;
+  console.log("Server run with port " + port);
 });

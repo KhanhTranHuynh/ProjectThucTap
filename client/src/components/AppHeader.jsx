@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Menu } from "antd";
+import { Image, Layout, Menu } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const { Header } = Layout;
@@ -25,7 +25,7 @@ const AppHeader = () => {
                 position: "fixed",
                 top: 0,
                 left: 0,
-                right: 17,
+                right: 0,
                 zIndex: 1,
                 background: "#001529",
                 padding: "0 20px",
@@ -47,7 +47,15 @@ const AppHeader = () => {
                 }}
                 onClick={() => navigate("/")}
             >
-                My App
+                SeaShip
+                <Image
+                    src="/logo/logo.svg"
+                    alt="App Logo"
+                    width={40}
+                    height={40}
+                    preview={false}
+                    style={{ marginLeft: 10, verticalAlign: "middle" }}
+                />
             </div>
             <Menu
                 theme="dark"

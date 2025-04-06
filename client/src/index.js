@@ -14,6 +14,8 @@ import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
+import Test from "./page/AccountTest";
+import AdminUser from "./admin/User";
 
 const GOOGLE_CLIENT_ID =
   "754367632037-7ijdlaht2gcl5hr53md316lvkbtpt2sn.apps.googleusercontent.com";
@@ -23,7 +25,6 @@ const globalStyles = `
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow-x: hidden; /* Ngăn cuộn ngang */
   }
   #root {
     min-height: 100vh;
@@ -31,9 +32,8 @@ const globalStyles = `
     flex-direction: column;
   }
   * {
-    box-sizing: border-box; /* Đảm bảo padding và border không làm tăng kích thước */
+    box-sizing: border-box;
   }
-  /* Reset margin và padding mặc định cho các phần tử */
   h1, h2, h3, h4, h5, h6, p, ul, ol, li {
     margin: 0;
     padding: 0;
@@ -76,6 +76,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route
                 path="/profile"
                 element={<PrivateRoute element={<Account />} />}
+              />
+              <Route
+                path="/test"
+                element={<PrivateRoute element={<Test />} />}
+              />
+              <Route
+                path="/admin"
+                element={<PrivateRoute element={<AdminUser />} />}
               />
               <Route path="/viewer/:plyFileName" element={<PlyViewerPage />} />
             </Routes>

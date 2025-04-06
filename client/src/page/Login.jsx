@@ -21,7 +21,16 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        paddingTop: "20vh",
+      }}
+    >
       <h1>Đăng nhập bằng Google</h1>
       <GoogleLogin
         onSuccess={handleLoginSuccess}
