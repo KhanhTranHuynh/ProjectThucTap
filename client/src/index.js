@@ -15,7 +15,7 @@ import { Content } from "antd/es/layout/layout";
 import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
 import Test from "./page/AccountTest";
-import AdminUser from "./admin/User";
+import Admin from "./admin/index";
 
 const GOOGLE_CLIENT_ID =
   "754367632037-7ijdlaht2gcl5hr53md316lvkbtpt2sn.apps.googleusercontent.com";
@@ -44,52 +44,73 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = globalStyles;
 document.head.appendChild(styleSheet);
 
+// Component Layout cho các route không phải /admin
+const MainLayout = ({ children }) => (
+  <Layout
+    style={{
+      minHeight: "100vh",
+      margin: 0,
+      padding: 0,
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    <AppHeader />
+    <Content
+      style={{
+        padding: "0 50px",
+        marginTop: 64,
+        marginLeft: 0,
+        marginRight: 0,
+        flex: 1,
+        overflow: "auto",
+      }}
+    >
+      {children}
+    </Content>
+    <AppFooter />
+  </Layout>
+);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <AuthProvider>
       <BrowserRouter>
-        <Layout
-          style={{
-            minHeight: "100vh",
-            margin: 0,
-            padding: 0,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <AppHeader />
-          <Content
-            style={{
-              padding: "0 50px",
-              marginTop: 64,
-              marginLeft: 0,
-              marginRight: 0,
-              flex: 1,
-              overflow: "auto",
-            }}
-          >
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={<HomePage />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/instruct" element={<Instruct />} />
-              <Route
-                path="/profile"
-                element={<PrivateRoute element={<Account />} />}
-              />
-              <Route
-                path="/test"
-                element={<PrivateRoute element={<Test />} />}
-              />
-              <Route
-                path="/admin"
-                element={<PrivateRoute element={<AdminUser />} />}
-              />
-              <Route path="/viewer/:plyFileName" element={<PlyViewerPage />} />
-            </Routes>
-          </Content>
-          <AppFooter />
-        </Layout>
+        <Routes>
+          {/* Route /admin không dùng Header và Footer */}
+          <Route
+            path="/admin"
+            element={<PrivateRoute element={<Admin />} requiredRole="admin" />}
+          />
+          {/* Các route khác dùng MainLayout */}
+          <Route
+            path="*"
+            element={
+              <MainLayout>
+                <Routes>
+                  {/* Các route công khai */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/instruct" element={<Instruct />} />
+                  {/* Các route yêu cầu đăng nhập */}
+                  <Route
+                    path="/profile"
+                    element={<PrivateRoute element={<Account />} />}
+                  />
+                  <Route
+                    path="/test"
+                    element={<PrivateRoute element={<Test />} />}
+                  />
+                  <Route
+                    path="/viewer/:plyFileName"
+                    element={<PlyViewerPage />}
+                  />
+                </Routes>
+              </MainLayout>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   </GoogleOAuthProvider>

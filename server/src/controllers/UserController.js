@@ -48,6 +48,16 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getAllUser = async (req, res) => {
+  try {
+    let [user] = await pool.execute("SELECT * FROM users ");
+    return res.status(200).json({ status: "OK", data: user });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -99,6 +109,7 @@ const getUserRole = async (req, res) => {
 
 module.exports = {
   getUser,
+  getAllUser,
   loginUser,
   getUserRole,
 };

@@ -4,6 +4,7 @@ const Controller = require("../controllers/Models3dController");
 const upload = require("../middleware/uploadMiddleware");
 
 router.get("/getWithIdUser", Controller.getWithIdUser);
+router.get("/getModel", Controller.getModel);
 router.post("/upload", upload.single("video"), Controller.upload);
 router.get("/upload-status/:uploadId", Controller.checkUploadStatus);
 

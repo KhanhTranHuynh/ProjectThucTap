@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Upload, Button, Table, message, Spin } from "antd";
-import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { Button, Table, message, Spin } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const VideoTo3D = () => {
     const [videos, setVideos] = useState([]);
-    const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem("token");
 
     useEffect(() => {
+        setLoading(true);
         axios
-            .get("http://localhost:5000/api/model3dRouter/getWithIdUser", {
+            .get("http://localhost:5000/api/model3dRouter/getModel", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -22,66 +22,24 @@ const VideoTo3D = () => {
                         response.data.data.map((item) => ({
                             key: item.id,
                             id: item.id,
-                            users_id: item.users_id,
+                            users_email: item.users_email,
                             link_video: item.link_video,
                             link_3d: item.link_3d,
+                            created_at: new Date(item.created_at).toLocaleString(),
+                            updated_at: new Date(item.updated_at).toLocaleString(),
                             link_video_full: `/videos/${item.link_video}`,
                             link_3d_full: `/plys/${item.link_3d}`,
                         }))
                     );
                 }
             })
-            .catch(() => message.error("Failed to fetch videos"));
-    }, []);
-
-    const handleUpload = (info) => {
-        setFile(info.file);
-        message.success(`${info.file.name} selected for upload`);
-    };
-
-    const handleConvert = async () => {
-        const logtime = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-        if (!file) {
-            message.error("Please upload a video first");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("video", file);
-
-        try {
-            setLoading(true);
-
-            await logtime(1800);
-
-            const response = await axios.post(
-                "http://localhost:5000/api/model3dRouter/upload",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            const newVideo = {
-                ...response.data,
-                key: response.data.id || Date.now(),
-                link_video_full: `/videos/${response.data.link_video}`,
-                link_3d_full: `/plys/${response.data.link_3d}`,
-            };
-
-            message.success("Video uploaded successfully");
-            setVideos([...videos, newVideo]);
-        } catch (error) {
-            message.error("Failed to upload video");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+            .catch(() => {
+                message.error("Failed to fetch videos");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [token]);
 
     const handleDownload = (filePath, fileName) => {
         const link = document.createElement("a");
@@ -93,6 +51,7 @@ const VideoTo3D = () => {
     };
 
     const columns = [
+        { title: "User Email", dataIndex: "users_email", key: "users_email" },
         { title: "Video", dataIndex: "link_video", key: "link_video" },
         {
             title: "Download Video",
@@ -130,24 +89,12 @@ const VideoTo3D = () => {
                 </Button>
             ),
         },
+        { title: "Created At", dataIndex: "created_at", key: "created_at" },
+        { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
     return (
         <div style={{ padding: 20 }}>
-            <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                <Upload beforeUpload={() => false} onChange={handleUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Video</Button>
-                </Upload>
-                <Button
-                    type="primary"
-                    icon={<VideoCameraOutlined />}
-                    onClick={handleConvert}
-                    disabled={loading}
-                >
-                    Convert Video to 3D
-                </Button>
-            </div>
-
             {loading && (
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Spin tip="Converting video to 3D, please wait..." size="large" />

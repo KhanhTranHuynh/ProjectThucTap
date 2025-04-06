@@ -12,6 +12,17 @@ const uploadStatus = {};
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const { spawn } = require("child_process");
 
+const getModel = async (req, res) => {
+  try {
+    let [obj] = await pool.execute("SELECT * FROM models3d ");
+
+    return res.status(200).json({ status: "OK", data: obj });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
 const getWithIdUser = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -271,4 +282,5 @@ module.exports = {
   getWithIdUser,
   upload,
   checkUploadStatus,
+  getModel,
 };

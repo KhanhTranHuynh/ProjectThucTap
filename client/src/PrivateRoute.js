@@ -1,10 +1,9 @@
-// PrivateRoute.js
 import { Navigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
-const PrivateRoute = ({ element }) => {
+const PrivateRoute = ({ element, requiredRole }) => {
   const { token } = useContext(AuthContext);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,11 +21,11 @@ const PrivateRoute = ({ element }) => {
             token
           )}`
         );
-        console.log("first", response.data.role);
+        console.log("Role from API:", response.data.role); // Debug role
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching role:", error);
-        setUserRole(null);
+        setUserRole(null); // Nếu lỗi, không gán role
       } finally {
         setLoading(false);
       }
@@ -36,17 +35,20 @@ const PrivateRoute = ({ element }) => {
   }, [token]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Có thể thay bằng spinner
   }
 
+  // Nếu không có token, chuyển hướng về /login
   if (!token) {
     return <Navigate to="/login" />;
   }
 
-  if (userRole !== "admin") {
+  // Nếu route yêu cầu vai trò cụ thể (như "admin") và userRole không khớp
+  if (requiredRole && userRole !== requiredRole) {
     return <Navigate to="/" />;
   }
 
+  // Nếu có token (đã đăng nhập), cho phép truy cập element
   return element;
 };
 
