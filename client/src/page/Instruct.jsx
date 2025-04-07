@@ -11,15 +11,15 @@ const Instruct = () => {
         },
         {
             title: "Bước 2: Truy cập trang Profile",
-            description: "Vào trang Profile để xem và chỉnh sửa thông tin cá nhân.",
+            description: "Vào trang Profile để xem danh sách các tệp đã tải lên và các mô hình 3D đồng thời bạn sẽ tạo mô hình tại đây.",
         },
         {
-            title: "Bước 3: Liên hệ hỗ trợ",
-            description: "Truy cập trang Contact để gửi tin nhắn nếu cần trợ giúp.",
+            title: "Bước 3: Tạo mô hình",
+            description: "Bạn tải Video cần tạo mô hình lên tại bằng nút Upload Video và chọn Convert Video to 3D xong bạn cần đợi từ 3 - 7 phút để hệ thống tạo mô hình. Tùy vào đầu vào của video mà chất lượng mô hình sẽ khác đồng thời vì đây là bản Web nên chất lượng sẽ không được cao, bạn có thể hiện với chúng tôi để có thể được hổ trợ tạo các mô hình thương mại."
         },
         {
-            title: "Bước 4: Xem tài liệu",
-            description: "Sử dụng trang Viewer để xem các tệp PLY (nếu có).",
+            title: "Bước 4: Tải xuống mô hình",
+            description: "Sau khi hoàn thành việc tạo mộ hình, bạn có thể xem mô hình trực tiếp hoặc tải xuống tệp PLY để sử dụng.",
         },
     ];
 

@@ -8,6 +8,7 @@ const VideoTo3D = () => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem("token");
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         axios
@@ -32,6 +33,13 @@ const VideoTo3D = () => {
                 }
             })
             .catch(() => message.error("Failed to fetch videos"));
+
+        axios
+            .get(`http://localhost:5000/api/userRouter/getUserRole?token=${token}`)
+            .then((response) => {
+                setUserRole(response.data.role);
+            })
+            .catch(() => message.error("Failed to fetch user role"));
     }, []);
 
     const handleUpload = (info) => {
@@ -134,18 +142,26 @@ const VideoTo3D = () => {
 
     return (
         <div style={{ padding: 20 }}>
-            <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                <Upload beforeUpload={() => false} onChange={handleUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Video</Button>
-                </Upload>
-                <Button
-                    type="primary"
-                    icon={<VideoCameraOutlined />}
-                    onClick={handleConvert}
-                    disabled={loading}
-                >
-                    Convert Video to 3D
-                </Button>
+
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 20 }}>
+                <div style={{ display: "flex", gap: 10 }}>
+                    <Upload beforeUpload={() => false} onChange={handleUpload}>
+                        <Button icon={<UploadOutlined />}>Upload Video</Button>
+                    </Upload>
+                    <Button
+                        type="primary"
+                        icon={<VideoCameraOutlined />}
+                        onClick={handleConvert}
+                        disabled={loading}
+                    >
+                        Convert Video to 3D
+                    </Button>
+                </div>
+                {userRole === "admin" && (
+                    <Button type="primary" onClick={() => window.location.href = "/admin"}>
+                        Admin
+                    </Button>
+                )}
             </div>
 
             {loading && (

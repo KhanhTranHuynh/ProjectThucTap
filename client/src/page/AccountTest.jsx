@@ -1,162 +1,88 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { Upload, Button, Table, message, Spin } from "antd";
-import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { Button, InputNumber, message } from "antd";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const VideoTo3D = () => {
-    const [videos, setVideos] = useState([]);
-    const [file, setFile] = useState(null);
+// Khởi tạo Stripe với public key hardcode
+const stripePromise = loadStripe("pk_test_51RB5Lm2esuIrmp0zTxjv03FmfWgHHJuGX3I4SpPvnAworTWEVP81CF4fsKsGsfUv49tTFmrH0tiNEc0SeIf2vVCv00shc6lTZ8");
+
+const CheckoutForm = ({ amount }) => {
+    const stripe = useStripe();
+    const elements = useElements();
     const [loading, setLoading] = useState(false);
-    const token = localStorage.getItem("token");
 
-    useEffect(() => {
-        axios
-            .get("http://localhost:5000/api/model3dRouter/getWithIdUser", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                if (response.data.status === "OK") {
-                    setVideos(
-                        response.data.data.map((item) => ({
-                            key: item.id,
-                            id: item.id,
-                            users_id: item.users_id,
-                            link_video: item.link_video,
-                            link_3d: item.link_3d,
-                            link_video_full: `/videos/${item.link_video}`,
-                            link_3d_full: `/plys/${item.link_3d}`,
-                        }))
-                    );
-                }
-            })
-            .catch(() => message.error("Failed to fetch videos"));
-    }, []);
-
-    const handleUpload = (info) => {
-        setFile(info.file);
-        message.success(`${info.file.name} selected for upload`);
-    };
-
-    const handleConvert = async () => {
-        const logtime = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-        if (!file) {
-            message.error("Please upload a video first");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!stripe || !elements || !amount || amount < 1000) {
+            message.error("Vui lòng nhập số tiền hợp lệ (tối thiểu 1000 VNĐ)");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("video", file);
-
+        setLoading(true);
         try {
-            setLoading(true);
-
-            await logtime(1800);
-
-            const response = await axios.post(
-                "http://localhost:5000/api/model3dRouter/upload",
-                formData,
+            const token = localStorage.getItem("token"); // Giả sử token lưu ở localStorage
+            const { data } = await axios.post(
+                "http://localhost:5000/api/payment/deposit",
+                { amount },
                 {
                     headers: {
-                        "Content-Type": "multipart/form-data",
                         Authorization: `Bearer ${token}`,
                     },
                 }
             );
 
-            const newVideo = {
-                ...response.data,
-                key: response.data.id || Date.now(),
-                link_video_full: `/videos/${response.data.link_video}`,
-                link_3d_full: `/plys/${response.data.link_3d}`,
-            };
+            if (data.status !== "OK") {
+                throw new Error(data.message || "Lỗi từ server");
+            }
 
-            message.success("Video uploaded successfully");
-            setVideos([...videos, newVideo]);
+            const result = await stripe.confirmCardPayment(data.clientSecret, {
+                payment_method: {
+                    card: elements.getElement(CardElement),
+                },
+            });
+
+            if (result.error) {
+                message.error(result.error.message);
+            } else if (result.paymentIntent.status === "succeeded") {
+                message.success("Nạp tiền thành công!");
+            }
         } catch (error) {
-            message.error("Failed to upload video");
-            console.error(error);
+            message.error(error.message || "Nạp tiền thất bại!");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDownload = (filePath, fileName) => {
-        const link = document.createElement("a");
-        link.href = filePath;
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    return (
+        <form onSubmit={handleSubmit}>
+            <CardElement options={{ style: { base: { fontSize: "16px" } } }} />
+            <Button type="primary" htmlType="submit" loading={loading} disabled={!stripe || loading}>
+                Nạp tiền
+            </Button>
+        </form>
+    );
+};
 
-    const columns = [
-        { title: "Video", dataIndex: "link_video", key: "link_video" },
-        {
-            title: "Download Video",
-            dataIndex: "link_video",
-            key: "download_video",
-            render: (text, record) => (
-                <Button
-                    icon={<DownloadOutlined />}
-                    onClick={() => handleDownload(record.link_video_full, text)}
-                >
-                    Download
-                </Button>
-            ),
-        },
-        {
-            title: "3D Model",
-            dataIndex: "link_3d",
-            key: "link_3d",
-            render: (text) => (
-                <a href={`/viewer/${text}`} target="_blank" rel="noopener noreferrer">
-                    {text}
-                </a>
-            ),
-        },
-        {
-            title: "Download PLY",
-            dataIndex: "link_3d",
-            key: "download_ply",
-            render: (text, record) => (
-                <Button
-                    icon={<DownloadOutlined />}
-                    onClick={() => handleDownload(record.link_3d_full, text)}
-                >
-                    Download
-                </Button>
-            ),
-        },
-    ];
+const Deposit = () => {
+    const [amount, setAmount] = useState(null); // Khởi tạo null để tránh giá trị mặc định 0
 
     return (
         <div style={{ padding: 20 }}>
-            <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                <Upload beforeUpload={() => false} onChange={handleUpload}>
-                    <Button icon={<UploadOutlined />}>Upload Video</Button>
-                </Upload>
-                <Button
-                    type="primary"
-                    icon={<VideoCameraOutlined />}
-                    onClick={handleConvert}
-                    disabled={loading}
-                >
-                    Convert Video to 3D
-                </Button>
-            </div>
-
-            {loading && (
-                <div style={{ textAlign: "center", marginBottom: 20 }}>
-                    <Spin tip="Converting video to 3D, please wait..." size="large" />
-                </div>
-            )}
-
-            <Table columns={columns} dataSource={videos} />
+            <h2>Nạp tiền</h2>
+            <InputNumber
+                min={1000}
+                value={amount}
+                onChange={(value) => setAmount(value)}
+                style={{ marginBottom: 20 }}
+                formatter={(value) => `${value || ""} VNĐ`}
+                parser={(value) => value.replace(" VNĐ", "")}
+            />
+            <Elements stripe={stripePromise}>
+                <CheckoutForm amount={amount} />
+            </Elements>
         </div>
     );
 };
 
-export default VideoTo3D;
+export default Deposit;

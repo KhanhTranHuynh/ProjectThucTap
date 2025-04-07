@@ -14,9 +14,9 @@ const App = () => {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
-    const [compo, setCompo] = useState("TableUsers"); // Mặc định là TableUsers
-    const [selectedKeys, setSelectedKeys] = useState(["2-2"]); // Mặc định chọn "User"
-    const [openKeys, setOpenKeys] = useState(["2"]); // Mặc định mở menu "User"
+    const [compo, setCompo] = useState("TableUsers");
+    const [selectedKeys, setSelectedKeys] = useState(["2-2"]);
+    const [openKeys, setOpenKeys] = useState(["2"]);
     const navigate = useNavigate();
 
     const renderComponent = () => {
@@ -127,7 +127,7 @@ const App = () => {
                 <Menu
                     theme="dark"
                     selectedKeys={selectedKeys}
-                    defaultSelectedKeys={["1-2"]}
+                    defaultSelectedKeys={["1-1"]}
                     mode="inline"
                     items={items}
                     openKeys={openKeys}
