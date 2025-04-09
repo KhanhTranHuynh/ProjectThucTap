@@ -10,7 +10,7 @@ const App = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("http://localhost:5000/api/userRouter/getAllUser");
+            const response = await axios.get("http://localhost:55009/api/userRouter/getAllUser");
             if (response.data.status === "OK") {
                 setUserData(response.data.data);
             } else {

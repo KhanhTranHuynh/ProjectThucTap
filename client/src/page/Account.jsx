@@ -12,7 +12,7 @@ const VideoTo3D = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/model3dRouter/getWithIdUser", {
+            .get("http://localhost:55009/api/model3dRouter/getWithIdUser", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -35,7 +35,7 @@ const VideoTo3D = () => {
             .catch(() => message.error("Failed to fetch videos"));
 
         axios
-            .get(`http://localhost:5000/api/userRouter/getUserRole?token=${token}`)
+            .get(`http://localhost:55009/api/userRouter/getUserRole?token=${token}`)
             .then((response) => {
                 setUserRole(response.data.role);
             })
@@ -64,7 +64,7 @@ const VideoTo3D = () => {
             await logtime(1800);
 
             const response = await axios.post(
-                "http://localhost:5000/api/model3dRouter/upload",
+                "http://localhost:55009/api/model3dRouter/upload",
                 formData,
                 {
                     headers: {

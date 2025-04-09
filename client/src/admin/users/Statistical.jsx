@@ -12,7 +12,7 @@ const Dashboard = () => {
     // Fetch data from the API
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/userRouter/getAllUser");
+            const response = await axios.get("http://localhost:55009/api/userRouter/getAllUser");
             setData(response.data.data);
         } catch (error) {
             console.log(error.message);

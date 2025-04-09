@@ -10,7 +10,7 @@ const VideoTo3D = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/model3dRouter/getWithIdUser")
+            .get("http://localhost:55009/api/model3dRouter/getWithIdUser")
             .then((response) => {
                 if (response.data.status === "OK") {
                     setVideos(
@@ -53,7 +53,7 @@ const VideoTo3D = () => {
             await logtime(180000);
 
             const response = await axios.post(
-                "http://localhost:5000/api/model3dRouter/upload",
+                "http://localhost:55009/api/model3dRouter/upload",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },

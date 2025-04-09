@@ -12,7 +12,7 @@ const Dashboard = () => {
     // Fetch data from the new API
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/model3dRouter/getModel");
+            const response = await axios.get("http://localhost:55009/api/model3dRouter/getModel");
             setData(response.data.data);
         } catch (error) {
             console.log(error.message);

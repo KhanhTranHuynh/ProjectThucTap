@@ -22,7 +22,7 @@ const CheckoutForm = ({ amount }) => {
         try {
             const token = localStorage.getItem("token"); // Giả sử token lưu ở localStorage
             const { data } = await axios.post(
-                "http://localhost:5000/api/payment/deposit",
+                "http://localhost:55009/api/payment/deposit",
                 { amount },
                 {
                     headers: {

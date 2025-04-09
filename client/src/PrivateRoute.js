@@ -17,7 +17,7 @@ const PrivateRoute = ({ element, requiredRole }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/userRouter/getUserRole?token=${encodeURIComponent(
+          `http://localhost:55009/api/userRouter/getUserRole?token=${encodeURIComponent(
             token
           )}`
         );

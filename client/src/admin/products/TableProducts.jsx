@@ -11,7 +11,7 @@ const VideoTo3D = () => {
     useEffect(() => {
         setLoading(true);
         axios
-            .get("http://localhost:5000/api/model3dRouter/getModel", {
+            .get("http://localhost:55009/api/model3dRouter/getModel", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
