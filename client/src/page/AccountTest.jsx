@@ -4,7 +4,6 @@ import { Button, InputNumber, message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-// Khởi tạo Stripe với public key hardcode
 const stripePromise = loadStripe("pk_test_51RB5Lm2esuIrmp0zTxjv03FmfWgHHJuGX3I4SpPvnAworTWEVP81CF4fsKsGsfUv49tTFmrH0tiNEc0SeIf2vVCv00shc6lTZ8");
 
 const CheckoutForm = ({ amount }) => {

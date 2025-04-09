@@ -44,7 +44,6 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = globalStyles;
 document.head.appendChild(styleSheet);
 
-// Component Layout cho các route không phải /admin
 const MainLayout = ({ children }) => (
   <Layout
     style={{
@@ -77,23 +76,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Route /admin không dùng Header và Footer */}
           <Route
             path="/admin"
             element={<PrivateRoute element={<Admin />} requiredRole="admin" />}
           />
-          {/* Các route khác dùng MainLayout */}
           <Route
             path="*"
             element={
               <MainLayout>
                 <Routes>
-                  {/* Các route công khai */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/" element={<HomePage />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/instruct" element={<Instruct />} />
-                  {/* Các route yêu cầu đăng nhập */}
                   <Route
                     path="/profile"
                     element={<PrivateRoute element={<Account />} />}

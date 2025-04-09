@@ -21,11 +21,11 @@ const PrivateRoute = ({ element, requiredRole }) => {
             token
           )}`
         );
-        console.log("Role from API:", response.data.role); // Debug role
+        console.log("Role from API:", response.data.role);
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching role:", error);
-        setUserRole(null); // Nếu lỗi, không gán role
+        setUserRole(null);
       } finally {
         setLoading(false);
       }
@@ -35,20 +35,17 @@ const PrivateRoute = ({ element, requiredRole }) => {
   }, [token]);
 
   if (loading) {
-    return <div>Loading...</div>; // Có thể thay bằng spinner
+    return <div>Loading...</div>;
   }
 
-  // Nếu không có token, chuyển hướng về /login
   if (!token) {
     return <Navigate to="/login" />;
   }
 
-  // Nếu route yêu cầu vai trò cụ thể (như "admin") và userRole không khớp
   if (requiredRole && userRole !== requiredRole) {
     return <Navigate to="/" />;
   }
 
-  // Nếu có token (đã đăng nhập), cho phép truy cập element
   return element;
 };
 

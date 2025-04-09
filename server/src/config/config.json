@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "30012003",
-    "database": "learn",
+    "database": "tot_nghiep",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "timezone": "+07:00"

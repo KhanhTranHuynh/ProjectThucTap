@@ -23,9 +23,9 @@ const deposit = async (req, res) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // Stripe dùng cent, nhân 100 để đổi sang VND
-      currency: "vnd", // Hoặc "usd" nếu muốn
-      payment_method_types: ["card"], // Chỉ chấp nhận thẻ
+      amount: amount * 100,
+      currency: "vnd",
+      payment_method_types: ["card"],
     });
     res.json({ status: "OK", clientSecret: paymentIntent.client_secret });
   } catch (error) {

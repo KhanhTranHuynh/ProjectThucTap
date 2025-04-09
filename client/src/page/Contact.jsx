@@ -7,7 +7,6 @@ const { TextArea } = Input;
 const Contact = () => {
     const [form] = Form.useForm();
 
-    // Xử lý khi submit form
     const onFinish = (values) => {
         console.log("Dữ liệu form liên hệ:", values);
         message.success("Tin nhắn của bạn đã được gửi thành công!");

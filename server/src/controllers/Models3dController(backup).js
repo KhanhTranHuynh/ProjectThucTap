@@ -79,7 +79,7 @@ async function convertPlyFileWithStream(sourcePath, destPath) {
       readStream.pipe(writeStream);
     });
   } catch (error) {
-    console.error("Lỗi trong quá trình sao chép:", error);
+    console.error("Lỗi quá trình:", error);
     throw error;
   }
 }
@@ -97,11 +97,11 @@ const upload = async (req, res) => {
     const uploadId = Date.now().toString();
     uploadStatus[uploadId] = { status: "processing", result: null };
 
-    const videoFilename = req.file.filename; // Ví dụ: "1743995025387.mp4"
-    const plyFilename = videoFilename.replace(/\.mp4$/, ".ply"); // Ví dụ: "1743995025387.ply"
+    const videoFilename = req.file.filename;
+    const plyFilename = videoFilename.replace(/\.mp4$/, ".ply");
     console.log("Video filename:", videoFilename);
 
-    const baseDir = `O:\\${videoFilename.split(".")[0]}`; // Tạo thư mục "O:\\1743995025387"
+    const baseDir = `O:\\${videoFilename.split(".")[0]}`;
     const imagesDir = path.join(baseDir, "images");
     const sfmDir = path.join(baseDir, "sfm");
     const reconstructionDir = path.join(sfmDir, "reconstruction");
@@ -109,19 +109,17 @@ const upload = async (req, res) => {
 
     const runCommand = (cmd) => {
       return new Promise((resolve) => {
-        // Luôn resolve để không dừng
         console.log(`Bắt đầu chạy lệnh: ${cmd}`);
         const process = spawn(cmd, { shell: true, windowsHide: false });
         process.stdout.on("data", (data) => console.log(`Output: ${data}`));
         process.stderr.on("data", (data) => console.error(`Error: ${data}`));
         process.on("close", (code) => {
           console.log(`Lệnh "${cmd}" hoàn thành với code ${code}`);
-          resolve(code); // Không reject, luôn tiếp tục
+          resolve(code);
         });
       });
     };
 
-    // Chạy tất cả lệnh bất kể lỗi nào xảy ra
     await runCommand(`mkdir "${baseDir}"`);
     await runCommand(`mkdir "${imagesDir}"`);
     await runCommand(
@@ -145,7 +143,6 @@ const upload = async (req, res) => {
       await runCommand(cmd);
     }
 
-    // Kiểm tra video hợp lệ
     let isVideoValid = false;
     let warnings = [];
     try {
@@ -171,7 +168,6 @@ const upload = async (req, res) => {
 
     let result = {};
     if (isVideoValid) {
-      // Chỉ copy file .ply và lưu vào DB nếu video hợp lệ
       const sourcePath = path.join(
         __dirname,
         "..",
@@ -197,8 +193,8 @@ const upload = async (req, res) => {
         await fs.mkdir(destDir, { recursive: true });
         await convertPlyFileWithStream(sourcePath, destPath);
       } catch (error) {
-        console.error("Lỗi khi copy file .ply:", error.message);
-        warnings.push("Failed to copy .ply file");
+        console.error("Lỗi khi tạo file .ply:", error.message);
+        warnings.push("Failed to tạo .ply file");
       }
 
       const authHeader = req.headers.authorization;
@@ -240,7 +236,6 @@ const upload = async (req, res) => {
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     } else {
-      // Video không hợp lệ: vẫn trả về kết quả nhưng không copy .ply
       result = {
         status: "WARNING",
         message: "Video processed but not valid for .ply generation",
