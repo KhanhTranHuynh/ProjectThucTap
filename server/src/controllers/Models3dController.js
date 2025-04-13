@@ -126,7 +126,7 @@ const upload = async (req, res) => {
       `ffmpeg -i "${videoPath}" -vf "fps=5" -q:v 1 "${imagesDir}\\%04d.jpg"`
     );
 
-    const openMvgBin = "O:\\OpenMVG_Project\\openMVG_install\\bin";
+    const openMvgBin = "P:\\WebLuanVan\\openMVG_openMVS\\bin";
     const sfmDataJson = path.join(sfmDir, "sfm_data.json");
     const sfmDataBin = path.join(reconstructionDir, "sfm_data.bin");
     const sceneMvs = path.join(sfmDir, "scene.mvs");
