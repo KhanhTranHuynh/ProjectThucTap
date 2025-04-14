@@ -2,10 +2,12 @@
 /server/node_modules
 *.ply
 *.mp4
+/client/public/png
 server/.env
 *.sql
 .env
-/openMVG_openMVS
+/openMVG
+/openMVS
 /docker-compose.yml
 /Dockerfile.client
 /Dockerfile.server

@@ -10,7 +10,7 @@ const { config } = require("dotenv");
 const { clearScreenDown } = require("readline");
 const uploadStatus = {};
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 
 const getModel = async (req, res) => {
   try {
@@ -83,9 +83,12 @@ async function convertPlyFileWithStream(sourcePath, destPath) {
     throw error;
   }
 }
+
 const upload = async (req, res) => {
   try {
+    console.log("first");
     if (!req.file) {
+      console.log("first");
       return res
         .status(400)
         .json({ status: "ERROR", message: "No video file uploaded" });
@@ -98,8 +101,6 @@ const upload = async (req, res) => {
     uploadStatus[uploadId] = { status: "processing", result: null };
 
     const videoFilename = req.file.filename;
-    const plyFilename = videoFilename.replace(/\.mp4$/, ".ply");
-    console.log("Video filename:", videoFilename);
 
     const baseDir = `O:\\${videoFilename.split(".")[0]}`;
     const imagesDir = path.join(baseDir, "images");
@@ -123,123 +124,93 @@ const upload = async (req, res) => {
     await runCommand(`mkdir "${baseDir}"`);
     await runCommand(`mkdir "${imagesDir}"`);
     await runCommand(
-      `ffmpeg -i "${videoPath}" -vf "fps=5" -q:v 1 "${imagesDir}\\%04d.jpg"`
+      `ffmpeg -i "${videoPath}" -vf "fps=1" -q:v 1 "${imagesDir}\\%04d.jpg"`
     );
 
-    const openMvgBin = "P:\\WebLuanVan\\openMVG_openMVS\\bin";
+    const openMvgBin = "P:\\WebLuanVan\\openMVG\\bin";
+    const openMvsBin = "P:\\WebLuanVan\\openMVS\\bin";
+
     const sfmDataJson = path.join(sfmDir, "sfm_data.json");
     const sfmDataBin = path.join(reconstructionDir, "sfm_data.bin");
     const sceneMvs = path.join(sfmDir, "scene.mvs");
+    const dense_scene = path.join(sfmDir, "dense_scene.ply");
+
+    const reconstructMeshOutput = path.join(sfmDir, "mesh.ply");
+    const refineMeshOutput = path.join(sfmDir, "mesh_refined.ply");
+    const textureMeshOutput = path.join(
+      sfmDir,
+      `${videoFilename.replace(/\.mp4$/, "")}.ply`
+    );
 
     const openMvgCommands = [
       `"${openMvgBin}\\openMVG_main_SfMInit_ImageListing.exe" -i ${imagesDir} -o ${sfmDir} -f 600`,
       `"${openMvgBin}\\openMVG_main_ComputeFeatures.exe" -i ${sfmDataJson} -o ${sfmDir} -p ULTRA`,
-      `"${openMvgBin}\\openMVG_main_ComputeMatches.exe" -i ${sfmDataJson} -o ${sfmDir} -r 1`, // Đã sửa lỗi từ sfmDataBinaryJson
+      `"${openMvgBin}\\openMVG_main_ComputeMatches.exe" -i ${sfmDataJson} -o ${sfmDir} -r 1`,
       `"${openMvgBin}\\openMVG_main_IncrementalSfM.exe" -i ${sfmDataJson} -m ${sfmDir} -o ${reconstructionDir}`,
       `"${openMvgBin}\\openMVG_main_openMVG2openMVS.exe" -i ${sfmDataBin} -o "${sceneMvs}"`,
+      `"${openMvsBin}\\DensifyPointCloud.exe" "${sceneMvs}" -o "${dense_scene}"`,
+      `"${openMvsBin}\\ReconstructMesh.exe" -i "${sceneMvs}" -o "${reconstructMeshOutput}"`,
+      `"${openMvsBin}\\RefineMesh.exe" --input-file "${sceneMvs}" --mesh-file "${reconstructMeshOutput}" -o "${refineMeshOutput}"`,
+      `"${openMvsBin}\\TextureMesh.exe" --input-file "${sceneMvs}" --mesh-file "${refineMeshOutput}" -o "${textureMeshOutput}"`,
     ];
 
     for (const cmd of openMvgCommands) {
       await runCommand(cmd);
     }
 
-    let isVideoValid = false;
-    let warnings = [];
-    try {
-      const videoInfo = await getVideoInfo(videoPath);
-      const duration = videoInfo.duration;
-      const width = videoInfo.width;
-      const height = videoInfo.height;
-
-      isVideoValid = duration === 40 && width === 600 && height === 338;
-      if (duration !== 40) warnings.push(`ERROR`);
-      if (width !== 600 || height !== 338) warnings.push(`ERROR`);
-    } catch (error) {
-      console.error("ERROR", error.message);
-      warnings.push("ERROR");
-    }
-
-    let result = {};
-    if (isVideoValid) {
-      const sourcePath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "..",
-        "client",
-        "public",
-        "logo",
-        "default.ply"
-      );
-      const destDir = path.join(
-        __dirname,
-        "..",
-        "..",
-        "..",
-        "client",
-        "public",
-        "plys"
-      );
-      const destPath = path.join(destDir, plyFilename);
-
-      try {
-        await fs.mkdir(destDir, { recursive: true });
-        await convertPlyFileWithStream(sourcePath, destPath);
-      } catch (error) {
-        console.error("Lỗi khi tạo file .ply:", error.message);
-        warnings.push("Failed to tạo .ply file");
-      }
-
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ status: "ERR", message: "Unauthorized" });
-      }
-
-      const googleToken = authHeader.split(" ")[1];
-      const ticket = await client.verifyIdToken({
-        idToken: googleToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-
-      const payload = ticket.getPayload();
-      const email = payload.email;
-
-      let obj;
-      try {
-        [obj] = await pool.execute(
-          "INSERT INTO models3d (users_email, link_video, link_3d) VALUES (?, ?, ?)",
-          [email, videoFilename, plyFilename]
-        );
-      } catch (error) {
-        console.error("Lỗi khi lưu vào DB:", error.message);
-        warnings.push("Failed to save to database");
-      }
-
-      result = {
-        key: obj?.insertId || null,
-        id: obj?.insertId || null,
-        users_id: req.body.users_id || 1,
-        link_video: videoFilename,
-        link_3d: plyFilename,
-        status: "OK",
-        message: "File processed successfully",
-        data: obj || null,
-        link_video_full: `/uploads/${videoFilename}`,
-        link_3d_full: `/public/plys/${plyFilename}`,
-        warnings: warnings.length > 0 ? warnings : undefined,
-      };
-    } else {
-      result = {
-        status: "WARNING",
-        message: "Video processed but not valid for .ply generation",
-        link_video: videoFilename,
-        warnings,
-      };
-    }
-
-    uploadStatus[uploadId] = { status: "completed", result };
     deleteUndistortedImagesFolder();
-    res.status(200).json(result);
+    deleteAllLogAndDmapFilesInDirectory("P:/WebLuanVan/server");
+
+    copyFile(
+      `O:/${videoFilename.replace(/\.mp4$/, "")}/sfm/${videoFilename.replace(
+        /\.mp4$/,
+        ""
+      )}.ply`,
+      `P:/WebLuanVan/client/public/plys/${videoFilename.replace(
+        /\.mp4$/,
+        ""
+      )}.ply`
+    );
+
+    copyFile(
+      `O:/${videoFilename.replace(/\.mp4$/, "")}/sfm/${videoFilename.replace(
+        /\.mp4$/,
+        ""
+      )}0.png`,
+      `P:/WebLuanVan/client/public/png/${videoFilename.replace(
+        /\.mp4$/,
+        ""
+      )}0.png`
+    );
+
+    const plyFilename = videoFilename.replace(/\.mp4$/, ".ply");
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ status: "ERR", message: "Unauthorized" });
+    }
+
+    const googleToken = authHeader.split(" ")[1];
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
+    let obj;
+    try {
+      [obj] = await pool.execute(
+        "INSERT INTO models3d (users_email, link_video, link_3d) VALUES (?, ?, ?)",
+        [email, videoFilename, plyFilename]
+      );
+    } catch (error) {
+      console.error("Lỗi khi lưu vào DB:", error.message);
+      warnings.push("Failed to save to database");
+    }
+
+    res.status(200).json("okok");
   } catch (error) {
     console.error("Lỗi tổng quát trong quá trình upload:", error.message);
     res.status(500).json({
@@ -249,6 +220,38 @@ const upload = async (req, res) => {
     });
   }
 };
+
+async function copyFile(source, destination) {
+  try {
+    await fs.copyFile(source, destination);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function deleteAllLogAndDmapFilesInDirectory(logDir) {
+  try {
+    const files = await fs.readdir(logDir);
+    const targetFiles = files.filter(
+      (file) => file.endsWith(".log") || file.endsWith(".dmap")
+    );
+
+    if (targetFiles.length === 0) {
+      return;
+    }
+
+    for (const file of targetFiles) {
+      const filePath = path.join(logDir, file);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 async function deleteUndistortedImagesFolder() {
   const folderPath = path.join(__dirname, "..", "..", "undistorted_images");
@@ -260,23 +263,6 @@ async function deleteUndistortedImagesFolder() {
     console.error("Lỗi khi xóa folder undistorted_images:", err.message);
   }
 }
-
-const getVideoInfo = (filePath) => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) {
-        return reject(err);
-      }
-      const duration = metadata.format.duration;
-      const videoStream = metadata.streams.find(
-        (s) => s.codec_type === "video"
-      );
-      const width = videoStream.width;
-      const height = videoStream.height;
-      resolve({ duration, width, height });
-    });
-  });
-};
 
 const checkUploadStatus = async (req, res) => {
   const { uploadId } = req.params;

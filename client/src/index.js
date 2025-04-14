@@ -14,7 +14,6 @@ import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
-import Test from "./page/AccountTest";
 import Admin from "./admin/index";
 
 const GOOGLE_CLIENT_ID =
@@ -92,10 +91,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                   <Route
                     path="/profile"
                     element={<PrivateRoute element={<Account />} />}
-                  />
-                  <Route
-                    path="/test"
-                    element={<PrivateRoute element={<Test />} />}
                   />
                   <Route
                     path="/viewer/:plyFileName"

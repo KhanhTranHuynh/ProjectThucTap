@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const PlyViewer = ({ plyPath }) => {
+const PlyViewer = ({ plyPath, texturePath }) => {
     const mountRef = useRef(null);
 
     useEffect(() => {
@@ -33,20 +33,28 @@ const PlyViewer = ({ plyPath }) => {
             (geometry) => {
                 console.log('Geometry:', geometry);
 
-                let material;
-                if (geometry.attributes.color) {
-                    material = new THREE.MeshPhongMaterial({
-                        vertexColors: true,
-                        specular: 0x555555,
-                        shininess: 50,
-                    });
-                } else {
-                    material = new THREE.MeshPhongMaterial({
-                        color: 0xaaaaaa,
-                        specular: 0x555555,
-                        shininess: 50,
-                    });
+                // Tải texture từ file PNG
+                const texture = new THREE.TextureLoader().load(texturePath);
+
+                // Kiểm tra xem geometry có thuộc tính UV không
+                if (!geometry.attributes.uv) {
+                    // Nếu không có UV, tạo UV đơn giản cho mỗi điểm
+                    const uvs = [];
+                    const position = geometry.attributes.position;
+
+                    for (let i = 0; i < position.count; i++) {
+                        uvs.push(i / position.count, 0); // UV đơn giản, bạn có thể thay đổi logic tạo UV ở đây
+                    }
+
+                    geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
                 }
+
+                // Sử dụng MeshPhongMaterial với texture đã tải
+                const material = new THREE.MeshPhongMaterial({
+                    map: texture,
+                    specular: 0x555555,
+                    shininess: 50,
+                });
 
                 const mesh = new THREE.Mesh(geometry, material);
                 scene.add(mesh);
@@ -103,7 +111,7 @@ const PlyViewer = ({ plyPath }) => {
             }
             if (controls) controls.dispose();
         };
-    }, [plyPath]);
+    }, [plyPath, texturePath]);
 
     return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
 };
