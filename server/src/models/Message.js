@@ -2,27 +2,27 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Models3d extends Model {
+  class Message extends Model {
     static associate(models) {
-      // Bạn có thể liên kết với bảng Users ở đây nếu muốn:
-      // Models3d.belongsTo(models.User, { foreignKey: "users_email", targetKey: "email" });
+      // Nếu có liên kết với User, có thể thêm ở đây:
+      // Message.belongsTo(models.User, { foreignKey: "senderID", targetKey: "email" });
     }
   }
 
-  Models3d.init(
+  Message.init(
     {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      users_email: {
+      conversationId: {
         type: DataTypes.STRING,
       },
-      link_video: {
+      senderID: {
         type: DataTypes.STRING,
       },
-      link_3d: {
+      text: {
         type: DataTypes.STRING,
       },
       created_at: {
@@ -36,11 +36,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Models3d",
-      tableName: "models3d", // tên bảng đúng như MySQL
-      timestamps: false, // đã có created_at và updated_at trong CSDL
+      modelName: "Message",
+      tableName: "messages",
+      timestamps: false,
     }
   );
 
-  return Models3d;
+  return Message;
 };

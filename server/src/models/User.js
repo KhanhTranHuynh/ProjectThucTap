@@ -1,48 +1,43 @@
 "use strict";
-const { Model, DataTypes } = require("sequelize");
+const { Model } = require("sequelize");
 
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // Định nghĩa các mối quan hệ nếu có
+      // Define associations here if needed
     }
   }
 
   User.init(
     {
       email: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
         primaryKey: true,
-        allowNull: false,
       },
       name: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
+        type: DataTypes.STRING,
       },
       money: {
         type: DataTypes.FLOAT,
-        allowNull: true,
       },
       role: {
-        type: DataTypes.STRING(45),
-        allowNull: true,
+        type: DataTypes.STRING,
+        defaultValue: "client",
       },
       created_at: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.fn("NOW"),
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.fn("NOW"),
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
       },
     },
     {
       sequelize,
       modelName: "User",
-      tableName: "users", // Chỉ định tên bảng
-      timestamps: false, // Bảng đã có trường created_at và updated_at, nên không cần tự động thêm timestamps
+      tableName: "users", // Rất quan trọng nếu tên table là `users` thay vì `Users`
+      timestamps: false, // Vì bạn đang dùng thủ công created_at / updated_at
     }
   );
 

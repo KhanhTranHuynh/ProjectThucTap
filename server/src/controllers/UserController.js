@@ -80,6 +80,23 @@ const getUser = async (req, res) => {
   }
 };
 
+const getemailwithtoken = async (req, res) => {
+  try {
+    const googleToken = req.query.token; // Lấy token từ query string
+    console.log(req.query.token);
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload().email;
+    return res.status(200).json({ payload });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+};
+
 const getUserRole = async (req, res) => {
   const { token } = req.query;
   const ticket = await client.verifyIdToken({
@@ -112,4 +129,5 @@ module.exports = {
   getAllUser,
   loginUser,
   getUserRole,
+  getemailwithtoken,
 };

@@ -1,26 +1,125 @@
 const express = require("express");
-const app = express();
+const http = require("http");
+const { Server } = require("socket.io");
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-
 const cors = require("cors");
-app.use(cors());
-
 require("dotenv").config();
-const port = 55009;
 
+const app = express();
+const server = http.createServer(app); // Tạo HTTP server
+
+// Middlewares
+app.use(bodyParser.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //Init Connect Database================================
 const connectDB = require("./config/connectDB");
+const db = require("./models/index"); // Import models
 connectDB();
 
 //Init Web Route=======================================
 const initWebroute = require("./route/index");
 initWebroute(app);
 
-app.listen(port, () => {
-  console.log("Server run with port " + port);
+// Thiết lập Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+// Socket.IO Logic
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+
+    db.Message.findAll({ where: { conversationId: room } }).then((text) => {
+      socket.emit("load_messages", text);
+    });
+  });
+
+  socket.on("send_message", async (data) => {
+    try {
+      const { conversationId, text, senderID } = data;
+      console.log(`Message to room ${conversationId}:`, text);
+
+      const conversationIds = await db.Message.findAll({
+        attributes: [
+          [
+            db.Sequelize.fn("DISTINCT", db.Sequelize.col("conversationId")),
+            "conversationId",
+          ],
+        ],
+      });
+
+      const conversationsArray = conversationIds.map(
+        (conv) => conv.conversationId
+      );
+
+      if (!conversationsArray.includes(conversationId)) {
+        conversationsArray.push(conversationId);
+        console.log("Thêm conversation mới:", conversationId);
+      }
+
+      await db.Message.create({
+        conversationId,
+        senderID,
+        text,
+      });
+
+      io.emit("update_conversations", conversationsArray);
+
+      io.to(conversationId).emit("receive_message", {
+        senderID,
+        text,
+        time: new Date(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on("get_conversations", async (callback) => {
+    try {
+      const conversationsArray = await db.Message.findAll({
+        attributes: [
+          [
+            db.Sequelize.fn("DISTINCT", db.Sequelize.col("conversationId")),
+            "conversationId",
+          ],
+        ],
+      });
+
+      const conversationIds = conversationsArray.map(
+        (conv) => conv.conversationId
+      );
+
+      console.log("Danh sách conversationIds:", conversationIds);
+
+      callback({ status: "success", data: conversationIds });
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách conversations:", error);
+      callback({
+        status: "error",
+        message: "Không thể lấy danh sách conversations",
+      });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
+// Start Server
+const PORT = process.env.PORT || 55009;
+server.listen(PORT, () => {
+  console.log("Server is running on port " + PORT);
 });
