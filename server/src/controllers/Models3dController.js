@@ -52,38 +52,6 @@ const getWithIdUser = async (req, res) => {
   }
 };
 
-async function convertPlyFileWithStream(sourcePath, destPath) {
-  try {
-    const destDir = path.dirname(destPath);
-    await fs.mkdir(destDir, { recursive: true });
-
-    return new Promise((resolve, reject) => {
-      const readStream = fsSync.createReadStream(sourcePath);
-      const writeStream = fsSync.createWriteStream(destPath);
-
-      readStream.on("error", (error) => {
-        console.error("Lỗi khi đọc file:", error);
-        reject(error);
-      });
-
-      writeStream.on("error", (error) => {
-        console.error("Lỗi khi ghi file:", error);
-        reject(error);
-      });
-
-      writeStream.on("finish", () => {
-        console.log(`thành công ${path.basename(destPath)}`);
-        resolve();
-      });
-
-      readStream.pipe(writeStream);
-    });
-  } catch (error) {
-    console.error("Lỗi quá trình:", error);
-    throw error;
-  }
-}
-
 const upload = async (req, res) => {
   try {
     console.log("first");

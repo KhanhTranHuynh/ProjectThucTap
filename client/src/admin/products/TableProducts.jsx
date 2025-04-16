@@ -83,7 +83,10 @@ const VideoTo3D = () => {
             render: (text, record) => (
                 <Button
                     icon={<DownloadOutlined />}
-                    onClick={() => handleDownload(record.link_3d_full, text)}
+                    onClick={() => {
+                        handleDownload(`/png/${record.link_3d.replace(".ply", "0.png")}`, `${record.link_3d.replace(".ply", "0.png")}`);
+                        handleDownload(record.link_3d_full, text);
+                    }}
                 >
                     Download
                 </Button>

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 30012003
+      MYSQL_DATABASE: tot_nghiep
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  server:
+    build: ./server
+    ports:
+      - "55009:55009"
+    volumes:
+      - ./server:/app
+    environment:
+      - DB_HOST=db
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - db
+
+volumes:
+  db_data:

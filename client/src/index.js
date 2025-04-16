@@ -85,6 +85,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <MainLayout>
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/checkdocker" element={<Admin />} />
                   <Route path="/" element={<HomePage />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/instruct" element={<Instruct />} />
