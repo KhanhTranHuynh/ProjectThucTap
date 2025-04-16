@@ -3,20 +3,32 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchUserEmail } from "../redux/slices/userSlice"; // 👈 import redux action
 
 export default function Login() {
   const { setToken } = useContext(AuthContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // 👈 thêm useDispatch
 
   const handleLoginSuccess = async (credentialResponse) => {
-    const res = await axios.post("http://localhost:55009/api/userRouter/loginUser", {
-      googleToken: credentialResponse.credential,
-    });
+    try {
+      const res = await axios.post("http://localhost:55009/api/userRouter/loginUser", {
+        googleToken: credentialResponse.credential,
+      });
 
-    if (res.data.status === "OK") {
-      setToken(credentialResponse.credential);
-      alert(res.data.message);
-      navigate("/");
+      if (res.data.status === "OK") {
+        const token = credentialResponse.credential;
+
+        localStorage.setItem("token", token); // 👈 lưu vào localStorage
+        setToken(token);                      // 👈 cập nhật AuthContext
+        dispatch(fetchUserEmail(token));      // 👈 cập nhật Redux NGAY
+
+        alert(res.data.message);
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
     }
   };
 

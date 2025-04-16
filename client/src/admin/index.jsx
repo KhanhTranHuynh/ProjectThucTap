@@ -1,23 +1,32 @@
-import React, { useState } from "react";
-import { AreaChartOutlined, LogoutOutlined, RollbackOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { AreaChartOutlined, BgColorsOutlined, LogoutOutlined, RollbackOutlined, SettingOutlined, UserOutlined, WechatOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import TableUsers from "./users/TableUsers";
 import StatisticalUser from "./users/Statistical";
 import { useNavigate } from "react-router-dom";
 import TableProducts from './products/TableProducts';
 import StatisticalProducts from "./products/Statistical";
+import { useDispatch } from 'react-redux';
+import { useSocket } from "../SocketProvider/SocketContext";
+import BoxChat from "../components/BoxChat";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const App = () => {
+    const socket = useSocket();
+    const [conversations, setConversations] = useState([]);
+    const [showBoxChat, setShowBoxChat] = useState(false);
+    const [UserID, setUserID] = useState(null);
+
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
     const [compo, setCompo] = useState("TableUsers");
-    const [selectedKeys, setSelectedKeys] = useState(["2-2"]);
-    const [openKeys, setOpenKeys] = useState(["2"]);
+    const [selectedKeys, setSelectedKeys] = useState(["1-2"]);
+    const [openKeys, setOpenKeys] = useState(["1"]);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const renderComponent = () => {
         switch (compo) {
@@ -104,10 +113,53 @@ const App = () => {
                 },
             ]
         },
+        {
+            key: '8',
+            label: 'ChatBox',
+            icon: <WechatOutlined />,
+            onTitleClick: () => {
+                if (socket) {
+                    socket.emit("get_conversations", (response) => {
+                        if (response.status === "success") {
+                            console.log("Danh sách conversations:", response.data);
+                            setConversations(response.data);
+                        } else {
+                            console.error("Lỗi:", response.message);
+                        }
+                    });
+                }
+            },
+            children: conversations?.map(item => {
+                return {
+                    key: `8-${item}`,
+                    label: `User-${item}`,
+                    icon: <BgColorsOutlined />,
+                    onClick: () => {
+                        setShowBoxChat(true);
+                        setUserID(item);
+                        setCompo("SupportUser");
+                        setSelectedKeys([`8-${item}`]);
+                        setOpenKeys([]);
+                    }
+                }
+            })
+        },
     ];
-
+    useEffect(() => {
+        if (socket) {
+            socket.emit("get_conversations", (response) => {
+                if (response.status === "success") {
+                    console.log("Danh sách conversations:", response.data);
+                    setConversations(response.data);
+                } else {
+                    console.error("Lỗi:", response.message);
+                }
+            });
+        }
+    }, [socket, dispatch]);
     return (
         <Layout style={{ minHeight: "100vh" }}>
+            {showBoxChat && <BoxChat showBoxChat={showBoxChat} UserID={UserID} />}
             <Sider
                 collapsible
                 collapsed={collapsed}
