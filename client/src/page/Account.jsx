@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Upload, Button, Table, message, Spin } from "antd";
 import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { paymentZalo } from "../redux/slices/paymentZalo";
+import { addNewPayment } from "../redux/slices/payment";
+import { useDispatch, useSelector } from "react-redux"
+import moment from "moment";
 
 const VideoTo3D = () => {
     const [videos, setVideos] = useState([]);
@@ -99,6 +103,33 @@ const VideoTo3D = () => {
         link.click();
         document.body.removeChild(link);
     };
+    const dispatch = useDispatch()
+
+    const email = useSelector((state) => state.user.email);
+
+    const handleOrder = () => {
+        const before = moment().format("YYMMDD").toString();
+        const after = Math.floor(Math.random() * 1000000).toString();
+        const totalPrice = 1000000; // Replace with your actual total price calculation
+
+        const temp = async () => {
+            const result = await dispatch(addNewPayment({ id: before + after, Oder_TotalPrice: totalPrice, email: email }))
+            console.log(result); // Kiểm tra kết quả trả về
+            alert("Order placed successfully")
+        }
+        temp()
+
+        const payZalo = async () => {
+            const zalo = await dispatch(paymentZalo({ Oder_TotalPrice: totalPrice, app_trans_id: before + after }))
+            if (zalo.payload.data.return_message === "Giao dịch thành công") {
+                alert("Transaction successful")
+                window.open(zalo.payload.data.order_url);
+            } else {
+                alert("An error occurred")
+            }
+        }
+        payZalo()
+    }
 
     const columns = [
         { title: "Video", dataIndex: "link_video", key: "link_video" },
@@ -160,6 +191,9 @@ const VideoTo3D = () => {
                         Convert Video to 3D
                     </Button>
                 </div>
+                <Button type="primary" onClick={() => handleOrder()}>
+                    Napj Tien
+                </Button>
                 {userRole === "admin" && (
                     <Button type="primary" onClick={() => window.location.href = "/admin"}>
                         Admin
@@ -172,7 +206,6 @@ const VideoTo3D = () => {
                     <Spin tip="Converting video to 3D, please wait..." size="large" />
                 </div>
             )}
-
             <Table columns={columns} dataSource={videos} />
         </div>
     );

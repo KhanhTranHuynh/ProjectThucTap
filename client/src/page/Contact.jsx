@@ -1,22 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Card, Typography, message } from "antd";
+import { useDispatch } from "react-redux";
 
 const { Title } = Typography;
 const { TextArea } = Input;
 
 const Contact = () => {
     const [form] = Form.useForm();
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        message: "",
+    });
 
-    const onFinish = (values) => {
-        console.log("Dữ liệu form liên hệ:", values);
-        message.success("Tin nhắn của bạn đã được gửi thành công!");
-        form.resetFields();
+    const handleChange = (changedValues, allValues) => {
+        setFormData(allValues);
+    };
+    const dispatch = useDispatch();
+
+    const handleSendEmail = async () => {
+        const { name, email, message: msg } = formData;
+
+        if (!name || !email || !msg) {
+            message.error("Vui lòng điền đầy đủ thông tin!");
+            return;
+        }
+
+        try {
+            const res = await fetch("http://localhost:55009/api/sendEmail/sendEmail", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, message: msg }),
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                message.success("Email đã được gửi đến quản trị viên!");
+                form.resetFields();
+                setFormData({ name: "", email: "", message: "" });
+            } else {
+                message.error(result.error || "Lỗi khi gửi email.");
+            }
+        } catch (err) {
+            console.error("Lỗi:", err);
+            message.error("Không thể gửi email.");
+        }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log("Lỗi:", errorInfo);
-        message.error("Vui lòng điền đầy đủ thông tin!");
-    };
 
     return (
         <div style={{ padding: "50px", maxWidth: "600px", margin: "0 auto" }}>
@@ -28,16 +59,13 @@ const Contact = () => {
                     form={form}
                     name="contact"
                     layout="vertical"
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
+                    onValuesChange={handleChange}
                     autoComplete="off"
                 >
                     <Form.Item
                         label="Họ và Tên"
                         name="name"
-                        rules={[
-                            { required: true, message: "Vui lòng nhập họ và tên!" },
-                        ]}
+                        rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
                     >
                         <Input placeholder="Nhập họ và tên của bạn" />
                     </Form.Item>
@@ -56,15 +84,13 @@ const Contact = () => {
                     <Form.Item
                         label="Tin Nhắn"
                         name="message"
-                        rules={[
-                            { required: true, message: "Vui lòng nhập nội dung tin nhắn!" },
-                        ]}
+                        rules={[{ required: true, message: "Vui lòng nhập nội dung tin nhắn!" }]}
                     >
                         <TextArea rows={4} placeholder="Nhập tin nhắn của bạn" />
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
+                        <Button type="primary" onClick={handleSendEmail} block>
                             Gửi
                         </Button>
                     </Form.Item>
