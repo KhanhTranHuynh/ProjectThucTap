@@ -12,7 +12,6 @@ export const addNewPayment = createAsyncThunk(
         UserID: email,
       }
     );
-    alert(response.data.data);
     return response.data.data;
   }
 );

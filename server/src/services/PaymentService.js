@@ -183,32 +183,32 @@ const createPayment = async (body) => {
 const handleCallback = (body) => {
   console.log("handleCallback", body);
 
-  // let result = {};
-  // try {
-  //   const dataStr = body.data;
-  //   const reqMac = body.mac;
-  //   const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
-  //   if (reqMac !== mac) {
-  //     result.return_code = -1;
-  //     result.return_message = "mac not equal";
-  //     console.log("first mac not equal");
-  //   } else {
-  //     const dataJson = JSON.parse(dataStr);
-  //     console.log(
-  //       `UPDATE users SET money = 1000 WHERE email = "khanhtranhuynh9@gmail.com"`
-  //     );
+  let result = {};
+  try {
+    const dataStr = body.data;
+    const reqMac = body.mac;
+    const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
+    if (reqMac !== mac) {
+      result.return_code = -1;
+      result.return_message = "mac not equal";
+      console.log("first mac not equal");
+    } else {
+      const dataJson = JSON.parse(dataStr);
+      console.log(
+        `UPDATE users SET money = 100000 WHERE email = ${dataJson["email"]}`
+      );
 
-  //     pool.execute(
-  //       `UPDATE users SET money = 1000 WHERE email = "khanhtranhuynh9@gmail.com"`
-  //     );
-  //     result.return_code = 1;
-  //     result.return_message = "success";
-  //   }
-  // } catch (ex) {
-  //   result.return_code = 0;
-  //   result.return_message = ex.message;
-  // }
-  // return result;
+      pool.execute(
+        `UPDATE users SET money = 100000 WHERE email = ${dataJson["email"]}`
+      );
+      result.return_code = 1;
+      result.return_message = "success";
+    }
+  } catch (ex) {
+    result.return_code = 0;
+    result.return_message = ex.message;
+  }
+  return result;
 };
 
 const getOrderStatus = async (app_trans_id) => {

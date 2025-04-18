@@ -6,6 +6,7 @@ router.get("/getUser", userController.getUser);
 router.get("/getemailwithtoken", userController.getemailwithtoken);
 
 router.get("/getAllUser", userController.getAllUser);
+router.get("/getAllWithToKen", userController.getAllWithToKen);
 
 router.get("/getUserRole", userController.getUserRole);
 

@@ -18,6 +18,7 @@ import Admin from "./admin/index";
 import { SocketProvider } from "./SocketProvider/SocketContext";
 import BoxChat from "./components/BoxChat";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 
 const GOOGLE_CLIENT_ID =
@@ -78,43 +79,59 @@ const App = () => {
     const email = useSelector((state) => state.user.email); // 👈 lấy email từ Redux
 
     return (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <AuthProvider>
-                <SocketProvider>
-                    <BrowserRouter>
-                        <Routes>
-                            <Route
-                                path="/admin"
-                                element={<PrivateRoute element={<Admin />} requiredRole="admin" />}
-                            />
-                            <Route
-                                path="*"
-                                element={
-                                    <MainLayout>
-                                        {email && <BoxChat UserID={email} />}
-                                        <Routes>
-                                            <Route path="/login" element={<Login />} />
-                                            <Route path="/checkdocker" element={<Admin />} />
-                                            <Route path="/" element={<HomePage />} />
-                                            <Route path="/contact" element={<Contact />} />
-                                            <Route path="/instruct" element={<Instruct />} />
-                                            <Route
-                                                path="/profile"
-                                                element={<PrivateRoute element={<Account />} />}
-                                            />
-                                            <Route
-                                                path="/viewer/:plyFileName"
-                                                element={<PlyViewerPage />}
-                                            />
-                                        </Routes>
-                                    </MainLayout>
-                                }
-                            />
-                        </Routes>
-                    </BrowserRouter>
-                </SocketProvider>
-            </AuthProvider>
-        </GoogleOAuthProvider>
+        <>
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+
+
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <AuthProvider>
+                    <SocketProvider>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route
+                                    path="/admin"
+                                    element={<PrivateRoute element={<Admin />} requiredRole="admin" />}
+                                />
+                                <Route
+                                    path="*"
+                                    element={
+                                        <MainLayout>
+                                            {email && <BoxChat UserID={email} />}
+                                            <Routes>
+                                                <Route path="/login" element={<Login />} />
+                                                <Route path="/checkdocker" element={<Admin />} />
+                                                <Route path="/" element={<HomePage />} />
+                                                <Route path="/contact" element={<Contact />} />
+                                                <Route path="/instruct" element={<Instruct />} />
+                                                <Route
+                                                    path="/profile"
+                                                    element={<PrivateRoute element={<Account />} />}
+                                                />
+                                                <Route
+                                                    path="/viewer/:plyFileName"
+                                                    element={<PlyViewerPage />}
+                                                />
+                                            </Routes>
+                                        </MainLayout>
+                                    }
+                                />
+                            </Routes>
+                        </BrowserRouter>
+                    </SocketProvider>
+                </AuthProvider>
+            </GoogleOAuthProvider>
+        </>
     );
 };
 export default App;

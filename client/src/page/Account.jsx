@@ -6,6 +6,8 @@ import { paymentZalo } from "../redux/slices/paymentZalo";
 import { addNewPayment } from "../redux/slices/payment";
 import { useDispatch, useSelector } from "react-redux"
 import moment from "moment";
+import { toast } from "react-toastify"
+
 
 const VideoTo3D = () => {
     const [videos, setVideos] = useState([]);
@@ -13,6 +15,7 @@ const VideoTo3D = () => {
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem("token");
     const [userRole, setUserRole] = useState(null);
+    const [userMoney, setUserMoney] = useState(null);
 
     useEffect(() => {
         axios
@@ -44,7 +47,14 @@ const VideoTo3D = () => {
                 setUserRole(response.data.role);
             })
             .catch(() => message.error("Failed to fetch user role"));
+        axios
+            .get(`http://localhost:55009/api/userRouter/getAllWithToKen?token=${token}`)
+            .then((response) => {
+                setUserMoney(response.data.user.money);
+            })
+            .catch(() => message.error("Failed to fetch user role"));
     }, []);
+
 
     const handleUpload = (info) => {
         setFile(info.file);
@@ -110,22 +120,21 @@ const VideoTo3D = () => {
     const handleOrder = () => {
         const before = moment().format("YYMMDD").toString();
         const after = Math.floor(Math.random() * 1000000).toString();
-        const totalPrice = 1000000; // Replace with your actual total price calculation
+        const totalPrice = 100000; // Replace with your actual total price calculation
 
         const temp = async () => {
             const result = await dispatch(addNewPayment({ id: before + after, Oder_TotalPrice: totalPrice, email: email }))
             console.log(result); // Kiểm tra kết quả trả về
-            alert("Order placed successfully")
         }
         temp()
 
         const payZalo = async () => {
             const zalo = await dispatch(paymentZalo({ Oder_TotalPrice: totalPrice, app_trans_id: before + after }))
             if (zalo.payload.data.return_message === "Giao dịch thành công") {
-                alert("Transaction successful")
+                toast.success("Transaction successful")
                 window.open(zalo.payload.data.order_url);
             } else {
-                alert("An error occurred")
+                toast.error("An error occurred")
             }
         }
         payZalo()
@@ -191,23 +200,34 @@ const VideoTo3D = () => {
                         Convert Video to 3D
                     </Button>
                 </div>
-                <Button type="primary" onClick={() => handleOrder()}>
-                    Napj Tien
-                </Button>
                 {userRole === "admin" && (
                     <Button type="primary" onClick={() => window.location.href = "/admin"}>
                         Admin
                     </Button>
                 )}
+                <Button >
+                    Money: {userMoney?.toLocaleString('vi-VN')} VND
+                </Button>
+                <Button type="primary" onClick={() => handleOrder()}>
+                    Deposit 100.000 VND
+                </Button>
             </div>
-
             {loading && (
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Spin tip="Converting video to 3D, please wait..." size="large" />
                 </div>
             )}
             <Table columns={columns} dataSource={videos} />
-        </div>
+            <Button
+                type="primary"
+                onClick={() => {
+                    localStorage.removeItem('token');
+                    window.location.href = "/";
+                }}
+            >
+                LogOut
+            </Button>
+        </div >
     );
 };
 

@@ -109,7 +109,10 @@ const App = () => {
                     key: '3-2',
                     label: 'Logout',
                     icon: <LogoutOutlined />,
-                    // onClick: () => { dispatch(logoutUser()); navigate(`/login`) }
+                    onClick: () => {
+                        localStorage.removeItem('token');
+                        window.location.href = "/";
+                    }
                 },
             ]
         },

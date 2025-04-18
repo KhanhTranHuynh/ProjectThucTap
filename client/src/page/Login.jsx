@@ -5,6 +5,7 @@ import { AuthContext } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchUserEmail } from "../redux/slices/userSlice"; // 👈 import redux action
+import { toast } from "react-toastify";
 
 export default function Login() {
   const { setToken } = useContext(AuthContext);
@@ -24,7 +25,7 @@ export default function Login() {
         setToken(token);                      // 👈 cập nhật AuthContext
         dispatch(fetchUserEmail(token));      // 👈 cập nhật Redux NGAY
 
-        alert(res.data.message);
+        toast.success(res.data.message)
         navigate("/");
       }
     } catch (error) {

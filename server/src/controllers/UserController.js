@@ -124,10 +124,36 @@ const getUserRole = async (req, res) => {
   }
 };
 
+const getAllWithToKen = async (req, res) => {
+  const { token } = req.query;
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+
+  try {
+    const [rows] = await pool.execute("SELECT * FROM users WHERE email = ?", [
+      payload.email,
+    ]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user: rows[0] });
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getUser,
   getAllUser,
   loginUser,
   getUserRole,
   getemailwithtoken,
+  getAllWithToKen,
 };
