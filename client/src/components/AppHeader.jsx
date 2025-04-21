@@ -1,23 +1,15 @@
 import React from "react";
-import { Image, Layout, Menu } from "antd";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Image, Layout } from "antd";
+import { useNavigate } from "react-router-dom";
+import ContactModal from "../modal/ContactModal";
+import InstructModal from "../modal/InstructModal";
+import LoginModal from "../modal/LoginModal";
+
 
 const { Header } = Layout;
 
 const AppHeader = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const menuItems = [
-        { key: "/", label: "Home" },
-        { key: "/contact", label: "Contact" },
-        { key: "/instruct", label: "Instruct" },
-        { key: "/profile", label: "Profile" },
-    ];
-
-    const handleMenuClick = ({ key }) => {
-        navigate(key);
-    };
 
     return (
         <Header
@@ -27,50 +19,71 @@ const AppHeader = () => {
                 left: 0,
                 right: 0,
                 zIndex: 1,
-                background: "#001529",
+                background: "#1a1a1a",
                 padding: "0 20px",
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
                 margin: 0,
-                lineHeight: "64px",
+                height: "60px", // Tăng chiều cao để có không gian căn giữa
+                display: "flex",
+                alignItems: "center",
+                zIndex: 1000,
             }}
         >
             <div
-                className="logo"
                 style={{
-                    float: "left",
-                    color: "#fff",
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    lineHeight: "64px",
-                    cursor: "pointer",
-                    margin: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    flex: 1,
                 }}
-                onClick={() => navigate("/")}
             >
-                SeaShip
-                <Image
-                    src="/logo/logo.svg"
-                    alt="App Logo"
-                    width={40}
-                    height={40}
-                    preview={false}
-                    style={{ marginLeft: 10, verticalAlign: "middle" }}
-                />
+                <div
+                    className="logo"
+                    style={{
+                        color: "#22c55e",
+                        fontSize: "24px",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        marginRight: "10px",
+                    }}
+                    onClick={() => navigate("/")}
+                >
+                    SEASHIP
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "60px", // Đảm bảo chiều cao bằng Header để căn giữa
+                    }}
+                >
+                    <Image
+                        src="/logo/logo.svg"
+                        alt="App Logo"
+                        width={40}
+                        height={40}
+                        preview={false}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    />
+                </div>
             </div>
-            <Menu
-                theme="dark"
-                mode="horizontal"
-                selectedKeys={[location.pathname]}
-                items={menuItems}
-                onClick={handleMenuClick}
+            <div
                 style={{
-                    float: "right",
-                    lineHeight: "64px",
-                    borderBottom: "none",
-                    background: "transparent",
-                    margin: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
                 }}
-            />
+            >
+                <ContactModal />
+                <InstructModal />
+
+                <LoginModal />
+
+            </div>
         </Header>
     );
 };

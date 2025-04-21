@@ -29,6 +29,7 @@ const globalStyles = `
     margin: 0;
     padding: 0;
     height: 100%;
+    background-color: #181818;
   }
   #root {
     min-height: 100vh;
@@ -67,6 +68,7 @@ const MainLayout = ({ children }) => (
                 marginRight: 0,
                 flex: 1,
                 overflow: "auto",
+                backgroundColor: "#181818",
             }}
         >
             {children}

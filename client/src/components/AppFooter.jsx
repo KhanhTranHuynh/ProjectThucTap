@@ -30,7 +30,7 @@ const AppFooter = () => {
     return (
         <Footer
             style={{
-                background: "#001529",
+                background: "#1e1e1e",
                 color: "#fff",
                 padding: "40px 50px",
                 margin: 0,
