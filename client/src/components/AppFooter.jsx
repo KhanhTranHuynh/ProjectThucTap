@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Layout, Row, Col, Typography, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { MailOutlined, PhoneOutlined } from "@ant-design/icons";
@@ -6,9 +6,27 @@ import { MailOutlined, PhoneOutlined } from "@ant-design/icons";
 const { Footer } = Layout;
 const { Text, Link } = Typography;
 
-const AppFooter = () => {
+const HoverableLink = ({ to, children }) => {
     const navigate = useNavigate();
+    const [hover, setHover] = useState(false);
 
+    return (
+        <Link
+            onClick={() => navigate(to)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            style={{
+                color: hover ? "#1890ff" : "#d9d9d9",
+                transition: "color 0.3s ease",
+                cursor: "pointer",
+            }}
+        >
+            {children}
+        </Link>
+    );
+};
+
+const AppFooter = () => {
     return (
         <Footer
             style={{
@@ -26,34 +44,10 @@ const AppFooter = () => {
                         Liên Kết Nhanh
                     </Text>
                     <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
-                        <Link
-                            onClick={() => navigate("/")}
-                            style={{ color: "#d9d9d9" }}
-                            hoverStyle={{ color: "#1890ff" }}
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            onClick={() => navigate("/contact")}
-                            style={{ color: "#d9d9d9" }}
-                            hoverStyle={{ color: "#1890ff" }}
-                        >
-                            Contact
-                        </Link>
-                        <Link
-                            onClick={() => navigate("/instruct")}
-                            style={{ color: "#d9d9d9" }}
-                            hoverStyle={{ color: "#1890ff" }}
-                        >
-                            Instruct
-                        </Link>
-                        <Link
-                            onClick={() => navigate("/profile")}
-                            style={{ color: "#d9d9d9" }}
-                            hoverStyle={{ color: "#1890ff" }}
-                        >
-                            Profile
-                        </Link>
+                        <HoverableLink to="/">Home</HoverableLink>
+                        <HoverableLink to="/contact">Contact</HoverableLink>
+                        <HoverableLink to="/instruct">Instruct</HoverableLink>
+                        <HoverableLink to="/profile">Profile</HoverableLink>
                     </Space>
                 </Col>
 

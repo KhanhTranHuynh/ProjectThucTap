@@ -92,7 +92,7 @@ const upload = async (req, res) => {
     await runCommand(`mkdir "${baseDir}"`);
     await runCommand(`mkdir "${imagesDir}"`);
     await runCommand(
-      `ffmpeg -i "${videoPath}" -vf "fps=1" -q:v 1 "${imagesDir}\\%04d.jpg"`
+      `ffmpeg -i "${videoPath}" -vf "fps=5" -q:v 1 "${imagesDir}\\%04d.jpg"`
     );
 
     const openMvgBin = "P:\\WebLuanVan\\openMVG\\bin";
@@ -172,6 +172,16 @@ const upload = async (req, res) => {
       [obj] = await pool.execute(
         "INSERT INTO models3d (users_email, link_video, link_3d) VALUES (?, ?, ?)",
         [email, videoFilename, plyFilename]
+      );
+      await pool.execute(
+        `
+        UPDATE users
+        SET money = money - 5000,
+            updated_at = NOW()
+        WHERE email = ?
+          AND money >= 5000
+      `,
+        [email]
       );
     } catch (error) {
       console.error("Lỗi khi lưu vào DB:", error.message);
