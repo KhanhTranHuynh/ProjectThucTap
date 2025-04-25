@@ -19,7 +19,7 @@ import { SocketProvider } from "./SocketProvider/SocketContext";
 import BoxChat from "./components/BoxChat";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
-
+import HomeBackup from "./page/Home(Backup)";
 
 const GOOGLE_CLIENT_ID =
     "754367632037-7ijdlaht2gcl5hr53md316lvkbtpt2sn.apps.googleusercontent.com";
@@ -94,8 +94,6 @@ const App = () => {
                 pauseOnHover
                 theme="light"
             />
-
-
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                 <AuthProvider>
                     <SocketProvider>
@@ -128,6 +126,7 @@ const App = () => {
                                         </MainLayout>
                                     }
                                 />
+                                <Route path="/test" element={<HomeBackup />} />
                             </Routes>
                         </BrowserRouter>
                     </SocketProvider>
