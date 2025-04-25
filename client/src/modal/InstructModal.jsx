@@ -29,13 +29,13 @@ const InstructModal = () => {
         <>
             <span
                 style={{
-                    color: "#fff",
+                    color: "#111827",
                     lineHeight: "64px",
                     cursor: "pointer",
                 }}
                 onClick={() => setIsModalOpen(true)}
-                onMouseOver={(e) => (e.target.style.color = "#d1d5db")}
-                onMouseOut={(e) => (e.target.style.color = "#fff")}
+                onMouseOver={(e) => (e.target.style.color = "#3B82F6")}
+                onMouseOut={(e) => (e.target.style.color = "#111827")}
             >
                 Hướng dẫn
             </span>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Layout, Row, Col, Typography, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { MailOutlined, PhoneOutlined } from "@ant-design/icons";
@@ -16,7 +17,7 @@ const HoverableLink = ({ to, children }) => {
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             style={{
-                color: hover ? "#1890ff" : "#d9d9d9",
+                color: hover ? "#1890ff" : "#111827",
                 transition: "color 0.3s ease",
                 cursor: "pointer",
             }}
@@ -27,11 +28,23 @@ const HoverableLink = ({ to, children }) => {
 };
 
 const AppFooter = () => {
+    const [settings, setSettings] = useState({});
+
+    useEffect(() => {
+        axios.get("http://localhost:55009/api/settings/getAll")
+            .then(res => {
+                setSettings(res.data);
+            })
+            .catch(err => {
+                console.error("Lỗi khi gọi API settings:", err);
+            });
+    }, []);
+
     return (
         <Footer
             style={{
-                background: "#1e1e1e",
-                color: "#fff",
+                background: "#c7ccd5",
+                color: "#111827",
                 padding: "40px 50px",
                 margin: 0,
                 width: "100%",
@@ -40,7 +53,7 @@ const AppFooter = () => {
         >
             <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={8}>
-                    <Text strong style={{ color: "#fff", fontSize: "16px" }}>
+                    <Text strong style={{ color: "#111827", fontSize: "16px" }}>
                         Liên Kết Nhanh
                     </Text>
                     <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
@@ -50,31 +63,30 @@ const AppFooter = () => {
                         <HoverableLink to="/profile">Profile</HoverableLink>
                     </Space>
                 </Col>
-
                 <Col xs={24} sm={12} md={8}>
-                    <Text strong style={{ color: "#fff", fontSize: "16px" }}>
+                    <Text strong style={{ color: "#111827", fontSize: "16px" }}>
                         Liên Hệ
                     </Text>
                     <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
-                        <Text style={{ color: "#d9d9d9" }}>
-                            <MailOutlined /> Email: khanhtranhuynh9@gmail.com
+                        <Text style={{ color: "#111827" }}>
+                            <MailOutlined /> Email: {settings.contact_email || "Đang tải..."}
                         </Text>
-                        <Text style={{ color: "#d9d9d9" }}>
-                            <PhoneOutlined /> Phone: (+84) 868 333 224
+                        <Text style={{ color: "#111827" }}>
+                            <PhoneOutlined /> Phone: {settings.contact_phone || "Đang tải..."}
                         </Text>
                     </Space>
                 </Col>
 
                 <Col xs={24} sm={24} md={8}>
-                    <Text strong style={{ color: "#fff", fontSize: "16px" }}>
+                    <Text strong style={{ color: "#111827", fontSize: "16px" }}>
                         Về Chúng Tôi
                     </Text>
                     <Space direction="vertical" style={{ marginTop: "10px", marginLeft: "10px" }}>
-                        <Text style={{ color: "#d9d9d9" }}>
-                            SeaShip - Hệ thống chuyển đổi Video thành mô hình 3D.
+                        <Text style={{ color: "#111827" }}>
+                            {settings.about_us || "SeaShip - Hệ thống chuyển đổi Video thành mô hình 3D."}
                         </Text>
-                        <Text style={{ color: "#d9d9d9" }}>
-                            © {new Date().getFullYear()} SeaShip. All rights reserved.
+                        <Text style={{ color: "#111827" }}>
+                            {settings.footer_text}
                         </Text>
                     </Space>
                 </Col>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Upload, Button, Table, message, Spin } from "antd";
 import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
@@ -184,11 +184,24 @@ const VideoTo3D = () => {
     ];
 
     return (
+
         <div style={{ padding: 20 }}>
 
             <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 20 }}>
                 <div style={{ display: "flex", gap: 10 }}>
-                    <Upload beforeUpload={() => false} onChange={handleUpload}>
+                    <Upload
+                        beforeUpload={() => false}
+                        onChange={handleUpload}
+                        itemRender={(originNode, file, fileList, actions) => {
+                            return React.cloneElement(originNode, {
+                                style: {
+                                    backgroundColor: 'white',
+                                    padding: '8px',
+                                    borderRadius: '4px',
+                                }
+                            });
+                        }}
+                    >
                         <Button icon={<UploadOutlined />}>Upload Video</Button>
                     </Upload>
                     <Button
@@ -217,13 +230,23 @@ const VideoTo3D = () => {
                     <Spin tip="Converting video to 3D, please wait..." size="large" />
                 </div>
             )}
-            <Table columns={columns} dataSource={videos} />
+            {/* <Table columns={columns} dataSource={videos} /> */}
+            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px' }}>
+                <Table
+                    columns={columns}
+                    dataSource={videos}
+                    pagination={{ pageSize: 10 }}
+                    bordered
+                    style={{ backgroundColor: 'white' }} // áp dụng cho container
+                />
+            </div>
             <Button
                 type="primary"
                 onClick={() => {
                     localStorage.removeItem('token');
                     window.location.href = "/";
                 }}
+                style={{ marginTop: 20 }}
             >
                 LogOut
             </Button>

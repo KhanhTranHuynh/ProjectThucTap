@@ -24,16 +24,6 @@ const Banner = () => {
         transform: "translateX(-50%)",
     };
 
-    const slidingLogosStyle = {
-        marginBottom: "-50px",
-        display: "flex",
-        gap: "20px",
-        alignItems: "center",
-        flexWrap: "nowrap",
-        animation: "slideLeft 15s linear infinite",
-        whiteSpace: "nowrap",
-    };
-
     const keyframes = `
         @keyframes slideBackAndForth {
             0% {
@@ -102,12 +92,11 @@ const Banner = () => {
                     bottom: 0,
                     left: 0,
                     width: "100%",
-                    height: "30%",
-                    background: "linear-gradient(to top, #181818, rgba(0, 0, 0, 0))",
+                    height: "50%",
+                    background: "linear-gradient(to top, #F9FAFB, rgba(0, 0, 0, 0))",
                     zIndex: 2,
                 }}
             ></div>
-
             {/* Content chính */}
             <div
                 style={{

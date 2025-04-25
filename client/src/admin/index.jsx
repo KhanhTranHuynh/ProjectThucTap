@@ -9,7 +9,7 @@ import StatisticalProducts from "./products/Statistical";
 import { useDispatch } from 'react-redux';
 import { useSocket } from "../SocketProvider/SocketContext";
 import BoxChat from "../components/BoxChat";
-
+import ConfigPage from "./ConfigPage";
 const { Header, Content, Footer, Sider } = Layout;
 
 const App = () => {
@@ -38,6 +38,8 @@ const App = () => {
                 return <TableProducts />;
             case "StatisticalProducts":
                 return <StatisticalProducts />;
+            case "ConfigPage":
+                return <ConfigPage />;
             default:
                 return <TableUsers />;
         }
@@ -95,6 +97,15 @@ const App = () => {
             ],
         },
         {
+            key: "4",
+            label: "Config",
+            // icon: <SettingOutlined />,
+            onClick: () => {
+                setCompo("ConfigPage"); // hoặc tên component bạn muốn hiển thị
+                setSelectedKeys(["4"]);
+            },
+        },
+        {
             key: '3',
             label: 'Settings',
             icon: <SettingOutlined />,
@@ -116,6 +127,7 @@ const App = () => {
                 },
             ]
         },
+
         {
             key: '8',
             label: 'ChatBox',

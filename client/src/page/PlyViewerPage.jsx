@@ -9,7 +9,7 @@ const PlyViewerPage = () => {
 
     return (
         <div style={{ width: '100%', height: '100vh' }}>
-            <h1>3D Model Viewer</h1>
+            <h1 style={{ color: "#ffffff" }}>3D Model Viewer</h1>
             <PlyViewer plyPath={plyPath} texturePath={texturePath} />
         </div>
     );
