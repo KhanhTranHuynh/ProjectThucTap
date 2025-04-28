@@ -122,11 +122,11 @@ const App = () => {
                                                     path="/viewer/:plyFileName"
                                                     element={<PlyViewerPage />}
                                                 />
+                                                <Route path="/test" element={<HomeBackup />} />
                                             </Routes>
                                         </MainLayout>
                                     }
                                 />
-                                <Route path="/test" element={<HomeBackup />} />
                             </Routes>
                         </BrowserRouter>
                     </SocketProvider>
