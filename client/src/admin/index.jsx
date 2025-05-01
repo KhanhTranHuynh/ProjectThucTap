@@ -136,7 +136,6 @@ const App = () => {
                 if (socket) {
                     socket.emit("get_conversations", (response) => {
                         if (response.status === "success") {
-                            console.log("Danh sách conversations:", response.data);
                             setConversations(response.data);
                         } else {
                             console.error("Lỗi:", response.message);
@@ -164,7 +163,6 @@ const App = () => {
         if (socket) {
             socket.emit("get_conversations", (response) => {
                 if (response.status === "success") {
-                    console.log("Danh sách conversations:", response.data);
                     setConversations(response.data);
                 } else {
                     console.error("Lỗi:", response.message);

@@ -14,35 +14,50 @@ const Banner = () => {
         }
     }, []);
 
-    const slidingTextStyle = {
-        fontSize: "48px",
-        fontWeight: "bold",
-        animation: "slideBackAndForth 6s ease-in-out infinite",
-        whiteSpace: "nowrap",
-        position: "relative",
-        left: "50%",
-        transform: "translateX(-50%)",
-    };
-
     const keyframes = `
         @keyframes slideBackAndForth {
-            0% {
-                transform: translateX(-50%);
-            }
-            50% {
-                transform: translateX(-40%);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
+            0% { transform: translateX(-50%); }
+            50% { transform: translateX(-40%); }
+            100% { transform: translateX(-50%); }
         }
 
-        @keyframes slideLeft {
-            0% {
-                transform: translateX(100%);
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 20px !important;
+                text-align: center;
+                animation: none !important;
+                white-space: normal !important;
+                transform: none !important;
+                left: 0 !important;
+                margin: 20px auto !important;
+                max-width: 90% !important;
+                line-height: 1.4;
             }
-            100% {
-                transform: translateX(-100%);
+
+            .banner-description {
+                font-size: 14px !important;
+                text-align: center;
+                margin: 30px auto !important;
+                max-width: 95% !important;
+                line-height: 1.5;
+                padding: 0 10px;
+            }
+
+            .banner-buttons {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+
+            .ply-viewer {
+                display: none !important;
+            }
+
+            .banner-content {
+                padding: 20px !important;
+                align-items: center !important;
+                text-align: center !important;
+                justify-content: center !important;
+                margin-top: -150px !important;
             }
         }
     `;
@@ -72,7 +87,7 @@ const Banner = () => {
                 Your browser does not support the video tag.
             </video>
 
-            {/* Overlay đen phủ toàn bộ */}
+            {/* Overlay */}
             <div
                 style={{
                     position: "absolute",
@@ -83,9 +98,9 @@ const Banner = () => {
                     background: "rgba(0, 0, 0, 0.6)",
                     zIndex: 1,
                 }}
-            ></div>
+            />
 
-            {/* Gradient đen từ dưới lên */}
+            {/* Gradient */}
             <div
                 style={{
                     position: "absolute",
@@ -96,9 +111,11 @@ const Banner = () => {
                     background: "linear-gradient(to top, #F9FAFB, rgba(0, 0, 0, 0))",
                     zIndex: 2,
                 }}
-            ></div>
-            {/* Content chính */}
+            />
+
+            {/* Content */}
             <div
+                className="banner-content"
                 style={{
                     position: "relative",
                     zIndex: 3,
@@ -111,16 +128,33 @@ const Banner = () => {
                 }}
             >
                 <div>
-                    <h1 style={slidingTextStyle}>
+                    <h1
+                        className="banner-title"
+                        style={{
+                            fontSize: "48px",
+                            fontWeight: "bold",
+                            animation: "slideBackAndForth 6s ease-in-out infinite",
+                            position: "relative",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                        }}
+                    >
                         Mở hình 3D không căng não lực với<br />
                         Bộ tạo mô hình 3D AI của SEASHIP
                     </h1>
-                    <p style={{ fontSize: "18px", maxWidth: "600px", margin: "180px 0 20px 0" }}>
-                        Được tin tưởng bởi hàng triệu nhà phát triển game, studio game, nhiều nguồn hỗ trợ mô hình 3D và các nhà
-                        sáng tạo từ XR trên toàn thế giới để thúc hiện ý tưởng của họ, Meshy là công cụ tạo mô hình 3D AI hàng đầu
-                        dành cho việc tạo ra các mô hình và hoạt ảnh 3D chỉ trong vài giây.
+
+                    <p
+                        className="banner-description"
+                        style={{
+                            fontSize: "18px",
+                            maxWidth: "600px",
+                            margin: "20px 0",
+                        }}
+                    >
+                        Được tin tưởng bởi hàng triệu nhà phát triển game, studio game, nhiều nguồn hỗ trợ mô hình 3D và các nhà sáng tạo từ XR trên toàn thế giới để thúc hiện ý tưởng của họ, Meshy là công cụ tạo mô hình 3D AI hàng đầu dành cho việc tạo ra các mô hình và hoạt ảnh 3D chỉ trong vài giây.
                     </p>
-                    <div style={{ display: "flex", gap: "10px" }}>
+
+                    <div className="banner-buttons" style={{ display: "flex", gap: "10px" }}>
                         <Button
                             type="primary"
                             style={{
@@ -149,8 +183,9 @@ const Banner = () => {
                 </div>
             </div>
 
-            {/* PlyViewerHome ở bên phải */}
+            {/* PlyViewerHome ở desktop */}
             <div
+                className="ply-viewer"
                 style={{
                     position: "absolute",
                     top: "50%",

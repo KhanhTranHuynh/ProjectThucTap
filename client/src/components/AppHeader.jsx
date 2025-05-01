@@ -1,28 +1,41 @@
 import React, { useEffect, useState } from "react";
-import { Image, Layout } from "antd";
+import { Image, Layout, Menu, Dropdown, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import ContactModal from "../modal/ContactModal";
 import InstructModal from "../modal/InstructModal";
 import LoginModal from "../modal/LoginModal";
 import axios from "axios";
-
+import { MenuOutlined } from "@ant-design/icons";
 
 const { Header } = Layout;
 
 const AppHeader = () => {
     const navigate = useNavigate();
     const [settings, setSettings] = useState({});
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     useEffect(() => {
         axios.get("http://localhost:55009/api/settings/getAll")
-            .then(res => {
-                setSettings(res.data);
-            })
-            .catch(err => {
-                console.error("Lỗi khi gọi API settings:", err);
-            });
-    }, []);
+            .then(res => setSettings(res.data))
+            .catch(err => console.error("Lỗi khi gọi API settings:", err));
 
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+    const dropdownMenu = (
+        <Menu>
+            <Menu.Item key="contact">
+                <ContactModal />
+            </Menu.Item>
+            <Menu.Item key="instruct">
+                <InstructModal />
+            </Menu.Item>
+            <Menu.Item key="login">
+                <LoginModal />
+            </Menu.Item>
+        </Menu>
+    );
     return (
         <Header
             style={{
@@ -81,19 +94,22 @@ const AppHeader = () => {
                             alignItems: "center",
                             justifyContent: "center",
                         }}
+                        onClick={() => navigate("/")}
                     />
                 </div>
             </div>
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "16px",
-                }}
-            >
-                <ContactModal />
-                <InstructModal />
-                <LoginModal />
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                {isMobile ? (
+                    <Dropdown overlay={dropdownMenu} trigger={['click']}>
+                        <Button icon={<MenuOutlined />} />
+                    </Dropdown>
+                ) : (
+                    <>
+                        <ContactModal />
+                        <InstructModal />
+                        <LoginModal />
+                    </>
+                )}
             </div>
         </Header>
     );

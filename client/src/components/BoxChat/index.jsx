@@ -61,7 +61,6 @@ const ChatBox = ({ UserID, showBoxChat }) => {
             };
             socket.emit("send_message", messageData);
             socket.on("update_conversations", (conversationIds) => {
-                console.log("first Nhận danh sách conversation mới:", typeof conversationIds);
                 dispatch(updateData(conversationIds));
             });
             setMessage("");

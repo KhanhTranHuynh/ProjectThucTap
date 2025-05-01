@@ -54,16 +54,13 @@ const getWithIdUser = async (req, res) => {
 
 const upload = async (req, res) => {
   try {
-    console.log("first");
     if (!req.file) {
-      console.log("first");
       return res
         .status(400)
         .json({ status: "ERROR", message: "No video file uploaded" });
     }
 
     const videoPath = req.file.path;
-    console.log("Video path:", videoPath);
 
     const uploadId = Date.now().toString();
     uploadStatus[uploadId] = { status: "processing", result: null };
@@ -74,11 +71,9 @@ const upload = async (req, res) => {
     const imagesDir = path.join(baseDir, "images");
     const sfmDir = path.join(baseDir, "sfm");
     const reconstructionDir = path.join(sfmDir, "reconstruction");
-    console.log("Base directory:", baseDir);
 
     const runCommand = (cmd) => {
       return new Promise((resolve) => {
-        console.log(`Bắt đầu chạy lệnh: ${cmd}`);
         const process = spawn(cmd, { shell: true, windowsHide: false });
         process.stdout.on("data", (data) => console.log(`Output: ${data}`));
         process.stderr.on("data", (data) => console.error(`Error: ${data}`));

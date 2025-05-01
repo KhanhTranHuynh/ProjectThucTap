@@ -21,7 +21,6 @@ const PrivateRoute = ({ element, requiredRole }) => {
             token
           )}`
         );
-        console.log("Role from API:", response.data.role);
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching role:", error);

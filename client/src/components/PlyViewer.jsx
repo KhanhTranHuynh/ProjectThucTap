@@ -31,8 +31,6 @@ const PlyViewer = ({ plyPath, texturePath }) => {
         loader.load(
             plyPath,
             (geometry) => {
-                console.log('Geometry:', geometry);
-
                 // Tải texture từ file PNG
                 const texture = new THREE.TextureLoader().load(texturePath);
 

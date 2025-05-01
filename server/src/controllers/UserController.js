@@ -83,7 +83,6 @@ const getUser = async (req, res) => {
 const getemailwithtoken = async (req, res) => {
   try {
     const googleToken = req.query.token; // Lấy token từ query string
-    console.log(req.query.token);
     const ticket = await client.verifyIdToken({
       idToken: googleToken,
       audience: process.env.GOOGLE_CLIENT_ID,

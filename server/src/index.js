@@ -34,11 +34,8 @@ const io = new Server(server, {
 
 // Socket.IO Logic
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
   socket.on("join_room", (room) => {
     socket.join(room);
-    console.log(`User ${socket.id} joined room: ${room}`);
 
     db.Message.findAll({ where: { conversationId: room } }).then((text) => {
       socket.emit("load_messages", text);
@@ -48,7 +45,6 @@ io.on("connection", (socket) => {
   socket.on("send_message", async (data) => {
     try {
       const { conversationId, text, senderID } = data;
-      console.log(`Message to room ${conversationId}:`, text);
 
       const conversationIds = await db.Message.findAll({
         attributes: [
@@ -65,7 +61,6 @@ io.on("connection", (socket) => {
 
       if (!conversationsArray.includes(conversationId)) {
         conversationsArray.push(conversationId);
-        console.log("Thêm conversation mới:", conversationId);
       }
 
       await db.Message.create({
@@ -101,11 +96,8 @@ io.on("connection", (socket) => {
         (conv) => conv.conversationId
       );
 
-      console.log("Danh sách conversationIds:", conversationIds);
-
       callback({ status: "success", data: conversationIds });
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách conversations:", error);
       callback({
         status: "error",
         message: "Không thể lấy danh sách conversations",
@@ -113,9 +105,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
+  socket.on("disconnect", () => {});
 });
 
 // Start Server

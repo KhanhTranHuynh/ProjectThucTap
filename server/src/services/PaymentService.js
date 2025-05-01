@@ -139,7 +139,6 @@ const config = {
 };
 
 const createPayment = async (body) => {
-  console.log("createPayment", body);
   const embed_data = {
     redirecturl: "http://localhost:3000/", // link chuyển hướng sau thanh toán
   };
@@ -181,8 +180,6 @@ const createPayment = async (body) => {
 };
 
 const handleCallback = (body) => {
-  console.log("handleCallback", body);
-
   let result = {};
   try {
     const dataStr = body.data;
@@ -191,7 +188,6 @@ const handleCallback = (body) => {
     if (reqMac !== mac) {
       result.return_code = -1;
       result.return_message = "mac not equal";
-      console.log("first mac not equal");
     } else {
       const dataJson = JSON.parse(dataStr);
       console.log(

@@ -31,14 +31,23 @@ const AppFooter = () => {
     const [settings, setSettings] = useState({});
 
     useEffect(() => {
-        axios.get("http://localhost:55009/api/settings/getAll")
-            .then(res => {
+        axios
+            .get("http://localhost:55009/api/settings/getAll")
+            .then((res) => {
                 setSettings(res.data);
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("Lỗi khi gọi API settings:", err);
             });
     }, []);
+
+    const styles = `
+        @media (max-width: 768px) {
+            .quick-links {
+                display: none !important; /* Ẩn Liên Kết Nhanh chỉ trên mobile */
+            }
+        }
+    `;
 
     return (
         <Footer
@@ -51,8 +60,9 @@ const AppFooter = () => {
                 boxSizing: "border-box",
             }}
         >
+            <style>{styles}</style>
             <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={8} className="quick-links">
                     <Text strong style={{ color: "#111827", fontSize: "16px" }}>
                         Liên Kết Nhanh
                     </Text>
@@ -76,7 +86,6 @@ const AppFooter = () => {
                         </Text>
                     </Space>
                 </Col>
-
                 <Col xs={24} sm={24} md={8}>
                     <Text strong style={{ color: "#111827", fontSize: "16px" }}>
                         Về Chúng Tôi

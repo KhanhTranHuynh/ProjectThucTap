@@ -34,7 +34,6 @@ const PlyViewer = ({ plyPath, texturePath }) => {
         loader.load(
             plyPath,
             (geometry) => {
-                console.log('Geometry:', geometry);
 
                 const texture = new THREE.TextureLoader().load(texturePath);
 

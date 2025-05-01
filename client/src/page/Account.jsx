@@ -4,10 +4,9 @@ import { Upload, Button, Table, message, Spin } from "antd";
 import { DownloadOutlined, UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { paymentZalo } from "../redux/slices/paymentZalo";
 import { addNewPayment } from "../redux/slices/payment";
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import { toast } from "react-toastify"
-
+import { toast } from "react-toastify";
 
 const VideoTo3D = () => {
     const [videos, setVideos] = useState([]);
@@ -47,14 +46,14 @@ const VideoTo3D = () => {
                 setUserRole(response.data.role);
             })
             .catch(() => message.error("Failed to fetch user role"));
+
         axios
             .get(`http://localhost:55009/api/userRouter/getAllWithToKen?token=${token}`)
             .then((response) => {
                 setUserMoney(response.data.user.money);
             })
-            .catch(() => message.error("Failed to fetch user role"));
+            .catch(() => message.error("Failed to fetch user money"));
     }, []);
-
 
     const handleUpload = (info) => {
         setFile(info.file);
@@ -113,32 +112,36 @@ const VideoTo3D = () => {
         link.click();
         document.body.removeChild(link);
     };
-    const dispatch = useDispatch()
 
+    const dispatch = useDispatch();
     const email = useSelector((state) => state.user.email);
 
     const handleOrder = () => {
         const before = moment().format("YYMMDD").toString();
         const after = Math.floor(Math.random() * 1000000).toString();
-        const totalPrice = 100000; // Replace with your actual total price calculation
+        const totalPrice = 100000;
 
         const temp = async () => {
-            const result = await dispatch(addNewPayment({ id: before + after, Oder_TotalPrice: totalPrice, email: email }))
-            console.log(result); // Kiểm tra kết quả trả về
-        }
-        temp()
+            const result = await dispatch(
+                addNewPayment({ id: before + after, Oder_TotalPrice: totalPrice, email: email })
+            );
+            console.log(result);
+        };
+        temp();
 
         const payZalo = async () => {
-            const zalo = await dispatch(paymentZalo({ Oder_TotalPrice: totalPrice, app_trans_id: before + after }))
+            const zalo = await dispatch(
+                paymentZalo({ Oder_TotalPrice: totalPrice, app_trans_id: before + after })
+            );
             if (zalo.payload.data.return_message === "Giao dịch thành công") {
-                toast.success("Transaction successful")
+                toast.success("Transaction successful");
                 window.open(zalo.payload.data.order_url);
             } else {
-                toast.error("An error occurred")
+                toast.error("An error occurred");
             }
-        }
-        payZalo()
-    }
+        };
+        payZalo();
+    };
 
     const columns = [
         { title: "Video", dataIndex: "link_video", key: "link_video" },
@@ -173,7 +176,10 @@ const VideoTo3D = () => {
                 <Button
                     icon={<DownloadOutlined />}
                     onClick={() => {
-                        handleDownload(`/png/${record.link_3d.replace(".ply", "0.png")}`, `${record.link_3d.replace(".ply", "0.png")}`);
+                        handleDownload(
+                            `/png/${record.link_3d.replace(".ply", "0.png")}`,
+                            `${record.link_3d.replace(".ply", "0.png")}`
+                        );
                         handleDownload(record.link_3d_full, text);
                     }}
                 >
@@ -183,24 +189,114 @@ const VideoTo3D = () => {
         },
     ];
 
+    const styles = `
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+            }
+
+            .button-group {
+                flex-direction: column !important;
+                gap: 12px !important;
+                width: 100% !important;
+            }
+
+            .admin-logout-container {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+            }
+
+            .ant-btn {
+                width: 100% !important;
+                font-size: 14px !important;
+                padding: 8px 12px !important;
+                height: auto !important;
+            }
+
+            .ant-upload {
+                width: 100% !important;
+            }
+
+            .ant-upload-select {
+                width: 100% !important;
+            }
+
+            .video-to-3d-container {
+                padding: 12px !important;
+            }
+
+            .ant-table {
+                font-size: 12px !important;
+            }
+
+            .ant-table-cell {
+                padding: 8px !important;
+            }
+
+            .ant-table-thead > tr > th {
+                font-size: 12px !important;
+                padding: 8px !important;
+            }
+
+            .ant-spin-dot-item {
+                width: 15px !important;
+                height: 15px !important;
+            }
+
+            .ant-spin-text {
+                font-size: 12px !important;
+            }
+
+            .logout-button {
+                width: 100% !important;
+                margin-top: 0 !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .button-container {
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+
+            .button-group {
+                flex-direction: row !important;
+                gap: 10px !important;
+            }
+
+            .admin-logout-container {
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+
+            .ant-btn {
+                width: auto !important;
+            }
+        }
+    `;
+
     return (
-
-        <div style={{ padding: 20 }}>
-
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 20 }}>
-                <div style={{ display: "flex", gap: 10 }}>
+        <div className="video-to-3d-container" style={{ padding: 20 }}>
+            <style>{styles}</style>
+            <div className="button-container" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                <div className="button-group" style={{ display: "flex", flexDirection: "row", gap: 10 }}>
                     <Upload
                         beforeUpload={() => false}
                         onChange={handleUpload}
-                        itemRender={(originNode, file, fileList, actions) => {
-                            return React.cloneElement(originNode, {
+                        itemRender={(originNode) =>
+                            React.cloneElement(originNode, {
                                 style: {
-                                    backgroundColor: 'white',
-                                    padding: '8px',
-                                    borderRadius: '4px',
-                                }
-                            });
-                        }}
+                                    backgroundColor: "white",
+                                    padding: "8px",
+                                    borderRadius: "4px",
+                                },
+                            })
+                        }
                     >
                         <Button icon={<UploadOutlined />}>Upload Video</Button>
                     </Upload>
@@ -213,44 +309,50 @@ const VideoTo3D = () => {
                         Convert Video to 3D
                     </Button>
                 </div>
-                {userRole === "admin" && (
-                    <Button type="primary" onClick={() => window.location.href = "/admin"}>
-                        Admin
+                <div className="button-group" style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+                    <Button>Money: {userMoney?.toLocaleString("vi-VN")} VND</Button>
+                    <Button type="primary" onClick={handleOrder}>
+                        Deposit 100.000 VND
                     </Button>
-                )}
-                <Button >
-                    Money: {userMoney?.toLocaleString('vi-VN')} VND
-                </Button>
-                <Button type="primary" onClick={() => handleOrder()}>
-                    Deposit 100.000 VND
-                </Button>
+                </div>
             </div>
+
             {loading && (
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Spin tip="Converting video to 3D, please wait..." size="large" />
-                </div>
+                    Emory</div>
             )}
-            {/* <Table columns={columns} dataSource={videos} /> */}
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px' }}>
+            <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "8px" }}>
                 <Table
                     columns={columns}
                     dataSource={videos}
                     pagination={{ pageSize: 10 }}
                     bordered
-                    style={{ backgroundColor: 'white' }} // áp dụng cho container
+                    style={{ backgroundColor: "white" }}
+                    scroll={{ x: "max-content" }}
                 />
             </div>
-            <Button
-                type="primary"
-                onClick={() => {
-                    localStorage.removeItem('token');
-                    window.location.href = "/";
-                }}
-                style={{ marginTop: 20 }}
+            <div
+                className="admin-logout-container"
+                style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}
             >
-                LogOut
-            </Button>
-        </div >
+                {userRole === "admin" && (
+                    <Button type="primary" onClick={() => (window.location.href = "/admin")}>
+                        Admin
+                    </Button>
+                )}
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        localStorage.removeItem("token");
+                        window.location.href = "/";
+                    }}
+                    className="logout-button"
+                >
+                    LogOut
+                </Button>
+            </div>
+        </div>
     );
 };
 
