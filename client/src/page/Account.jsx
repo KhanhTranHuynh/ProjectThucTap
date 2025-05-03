@@ -320,7 +320,7 @@ const VideoTo3D = () => {
             {loading && (
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Spin tip="Converting video to 3D, please wait..." size="large" />
-                    Emory</div>
+                </div>
             )}
             <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "8px" }}>
                 <Table
