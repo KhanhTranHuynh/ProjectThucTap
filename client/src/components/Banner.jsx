@@ -139,8 +139,8 @@ const Banner = () => {
                             transform: "translateX(-50%)",
                         }}
                     >
-                        Mở hình 3D không căng não lực với<br />
-                        Bộ tạo mô hình 3D AI của SEASHIP
+                        Tạo mô hình vật thể 3D từ Video tốc độ cao với<br />
+                        Bộ tạo mô hình vật thể 3D của SEASHIP
                     </h1>
 
                     <p
@@ -151,7 +151,7 @@ const Banner = () => {
                             margin: "20px 0",
                         }}
                     >
-                        Được tin tưởng bởi hàng triệu nhà phát triển game, studio game, nhiều nguồn hỗ trợ mô hình 3D và các nhà sáng tạo từ XR trên toàn thế giới để thúc hiện ý tưởng của họ, Meshy là công cụ tạo mô hình 3D AI hàng đầu dành cho việc tạo ra các mô hình và hoạt ảnh 3D chỉ trong vài giây.
+                        Được tin tưởng bởi hàng triệu nhà phát triển game, studio game, nhiều nguồn hỗ trợ mô hình 3D và các nhà sáng tạo từ XR trên toàn thế giới để thúc hiện ý tưởng của họ, SEASHIP là công cụ tạo mô hình 3D hàng đầu dành cho việc tạo ra các mô hình 3D chỉ từ video.
                     </p>
 
                     <div className="banner-buttons" style={{ display: "flex", gap: "10px" }}>
@@ -165,7 +165,7 @@ const Banner = () => {
                                 height: "40px",
                             }}
                         >
-                            Bắt đầu miễn phí
+                            Bắt đầu ngay
                         </Button>
                         <Button
                             type="default"

@@ -19,7 +19,6 @@ import { SocketProvider } from "./SocketProvider/SocketContext";
 import BoxChat from "./components/BoxChat";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import HomeBackup from "./page/Home(Backup)";
 
 const GOOGLE_CLIENT_ID =
     "754367632037-7ijdlaht2gcl5hr53md316lvkbtpt2sn.apps.googleusercontent.com";
@@ -122,7 +121,6 @@ const App = () => {
                                                     path="/viewer/:plyFileName"
                                                     element={<PlyViewerPage />}
                                                 />
-                                                <Route path="/test" element={<HomeBackup />} />
                                             </Routes>
                                         </MainLayout>
                                     }
