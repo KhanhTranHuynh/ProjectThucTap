@@ -1,109 +1,124 @@
-1. http://localhost:55009/api/userRouter/getUser
-   method: get
-   input: Authorization: Bearer <googleToken>
-   output: thông tin tài khoản
-   lưu ý: phải có googleToken để lấy thông tin
+# Tài liệu API
 
-2. http://localhost:55009/api/userRouter/getemailwithtoken
-   method: get
-   input: req.query.token
-   output: email
-   lưu ý: phải có token để lấy thông tin
+## 1. API Người dùng
 
-3. http://localhost:55009/api/userRouter/getAllUser
-   method: get
-   input: req.query.token
-   output: thông tin của tất cả các tài khoản
-   lưu ý: phải có token để lấy thông tin
+### 1.1. Lấy thông tin người dùng
 
-4. http://localhost:55009/api/userRouter/getAllWithToKen
-   method: get
-   input: req.query.token
-   output: thông tin của tất cả các tài khoản
-   lưu ý: phải có token để lấy thông tin
+- **Endpoint:** `GET /api/userRouter/getUser`
+- **Input:** Header `Authorization: Bearer <googleToken>`
+- **Output:** Thông tin tài khoản
+- **Ghi chú:** Cần token Google
 
-5. http://localhost:55009/api/userRouter/getUserRole
-   method: get
-   input: req.query.token
-   output: thông tin role của token
-   lưu ý: phải có token để lấy thông tin
+### 1.2. Lấy email từ token
 
-6. http://localhost:55009/api/userRouter/loginUser
-   method: post
-   input: google email
-   output: kết quả của việc đăng nhập
-   lưu ý: phải dùng tài khoản email google
+- **Endpoint:** `GET /api/userRouter/getemailwithtoken`
+- **Input:** `req.query.token`
+- **Output:** Email
+- **Ghi chú:** Cần token
 
-///////////////////////////////////////////////////////////////////////////////////
+### 1.3. Lấy tất cả người dùng
 
-7. http://localhost:55009/api/model3dRouter/getWithIdUser
-   method: get
-   input: headers.authorization
-   output: thông tin của các model 3d theo tài khoản
-   lưu ý: phải có token gửi về
+- **Endpoint:** `GET /api/userRouter/getAllUser`
+- **Input:** `req.query.token`
+- **Output:** Danh sách người dùng
+- **Ghi chú:** Cần token
 
-8. http://localhost:55009/api/model3dRouter/getModel
-   method: get
-   input: không
-   output: thông tin của tất cả các model 3d
-   lưu ý: không
+### 1.4. Lấy tất cả người dùng (có token)
 
-9. http://localhost:55009/api/model3dRouter/upload
-   method: post
-   input: file video
-   output: model 3d đã được tạo
-   lưu ý: không
+- **Endpoint:** `GET /api/userRouter/getAllWithToKen`
+- **Input:** `req.query.token`
+- **Output:** Danh sách người dùng
+- **Ghi chú:** Cần token
 
-10. http://localhost:55009/api/model3dRouter/upload
-    method: post
-    input: file video
-    output: model 3d đã được tạo
-    lưu ý: không
+### 1.5. Lấy role từ token
 
-///////////////////////////////////////////////////////////////////////////////////
+- **Endpoint:** `GET /api/userRouter/getUserRole`
+- **Input:** `req.query.token`
+- **Output:** Role của người dùng
+- **Ghi chú:** Cần token
 
-11. http://localhost:55009/api/sendEmail/sendEmail
-    method: post
-    input: thông tin email, tên người dùng, nội dung được gửi từ về từ body
-    output: gửi email đến tài khoản được chỉ định trước
-    lưu ý: không
+### 1.6. Đăng nhập người dùng
 
-///////////////////////////////////////////////////////////////////////////////////
+- **Endpoint:** `POST /api/userRouter/loginUser`
+- **Input:** Email Google (trong body)
+- **Output:** Kết quả đăng nhập
+- **Ghi chú:** Dùng email Google
 
-12. http://localhost:55009/api/settings/getAll
-    method: get
-    input: không
-    output: thông tin cấu hình web theo key-value
-    lưu ý: không
+---
 
-13. http://localhost:55009/api/settings/getTable
-    method: get
-    input: không
-    output: tất cả thông tin về cấu hình web
-    lưu ý: không
+## 2. API Model 3D
 
-14. http://localhost:55009/api/settings/update
-    method: put
-    input: thông tin id và setting_value được gửi về từ body
-    output: cập nhật thông tin
-    lưu ý: không
+### 2.1. Lấy model 3D theo người dùng
 
-15. http://localhost:55009/api/settings/upload
-    method: post
-    input: hình cho logo mới
-    output: cập nhật logo
-    lưu ý: không
+- **Endpoint:** `GET /api/model3dRouter/getWithIdUser`
+- **Input:** Header `Authorization: Bearer <token>`
+- **Output:** Danh sách model 3D
+- **Ghi chú:** Cần token
 
-///////////////////////////////////////////////////////////////////////////////////
+### 2.2. Lấy tất cả model 3D
 
-16. http://localhost:55009/api/PaymentRouter/addnew
-    method: post
-    input: thông tin được gửi về từ body
-    output: tạo được dữ liệu cho bảng Paymen
-    lưu ý: không
+- **Endpoint:** `GET /api/model3dRouter/getModel`
+- **Input:** Không
+- **Output:** Danh sách tất cả model 3D
 
-17. http://localhost:55009/api/PaymentRouter/paymentZalo
-    method: post
-    input: thông tin được gửi về từ body
-    output: thực hiện chuyển tiền và lưu vào csdl
-    lưu ý: không
+### 2.3. Upload video để tạo model 3D
+
+- **Endpoint:** `POST /api/model3dRouter/upload`
+- **Input:** File video (form-data)
+- **Output:** Model 3D được tạo
+- **Ghi chú:** Không cần token
+
+---
+
+## 3. API Gửi Email
+
+### 3.1. Gửi email
+
+- **Endpoint:** `POST /api/sendEmail/sendEmail`
+- **Input:** Body gồm email, tên người dùng, nội dung
+- **Output:** Gửi email đến tài khoản chỉ định
+- **Ghi chú:** Không cần token
+
+---
+
+## 4. API Cấu hình (Settings)
+
+### 4.1. Lấy tất cả cấu hình (key-value)
+
+- **Endpoint:** `GET /api/settings/getAll`
+- **Input:** Không
+- **Output:** Danh sách cấu hình (key-value)
+
+### 4.2. Lấy toàn bộ cấu hình dạng bảng
+
+- **Endpoint:** `GET /api/settings/getTable`
+- **Input:** Không
+- **Output:** Danh sách cấu hình
+
+### 4.3. Cập nhật cấu hình
+
+- **Endpoint:** `PUT /api/settings/update`
+- **Input:** Body gồm `id`, `setting_value`
+- **Output:** Kết quả cập nhật
+
+### 4.4. Cập nhật logo
+
+- **Endpoint:** `POST /api/settings/upload`
+- **Input:** Hình ảnh logo mới (form-data)
+- **Output:** Cập nhật thành công
+
+---
+
+## 5. API Thanh toán
+
+### 5.1. Thêm giao dịch mới
+
+- **Endpoint:** `POST /api/PaymentRouter/addnew`
+- **Input:** Thông tin giao dịch (trong body)
+- **Output:** Thêm vào bảng Payment
+
+### 5.2. Thanh toán qua ZaloPay
+
+- **Endpoint:** `POST /api/PaymentRouter/paymentZalo`
+- **Input:** Thông tin thanh toán (trong body)
+- **Output:** Thực hiện giao dịch và lưu DB
