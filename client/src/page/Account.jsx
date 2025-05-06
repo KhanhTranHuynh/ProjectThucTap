@@ -68,6 +68,13 @@ const VideoTo3D = () => {
             return;
         }
 
+        // Kiểm tra định dạng file, chỉ cho phép .mp4
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (fileExtension !== 'mp4') {
+            toast.error("Only .mp4 videos are allowed.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("video", file);
 
@@ -103,6 +110,7 @@ const VideoTo3D = () => {
             setLoading(false);
         }
     };
+
 
     const handleDownload = (filePath, fileName) => {
         const link = document.createElement("a");
@@ -288,6 +296,7 @@ const VideoTo3D = () => {
                     <Upload
                         beforeUpload={() => false}
                         onChange={handleUpload}
+                        accept=".mp4"  // Chỉ chấp nhận file MP4
                         itemRender={(originNode) =>
                             React.cloneElement(originNode, {
                                 style: {
