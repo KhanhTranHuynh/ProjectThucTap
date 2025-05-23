@@ -205,7 +205,7 @@ const App = () => {
                     {renderComponent()}
                 </Content>
                 <Footer style={{ textAlign: "center" }}>
-                    Iphone Store ©{new Date().getFullYear()} Created KhanhTran
+                    SEASHIP ©{new Date().getFullYear()} Created KhanhTran
                 </Footer>
             </Layout>
         </Layout>

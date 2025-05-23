@@ -147,6 +147,40 @@ const getAllWithToKen = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+const updateRole = async (req, res) => {
+  try {
+    const { role } = req.body; // Role from request body
+    const { email } = req.params; // Email from URL path
+
+    // Validate input
+    if (!role || !email) {
+      return res
+        .status(400)
+        .json({ status: "ERROR", message: "Role and email are required" });
+    }
+
+    // Execute the update query
+    const [result] = await pool.execute(
+      "UPDATE users SET role = ? WHERE email = ?",
+      [role, email]
+    );
+
+    // Check if any rows were affected
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ status: "ERROR", message: "User not found" });
+    }
+
+    // Return success response
+    return res.status(200).json({ status: "OK", data: { email, role } });
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return res
+      .status(500)
+      .json({ status: "ERROR", message: "Internal server error" });
+  }
+};
 
 module.exports = {
   getUser,
@@ -155,4 +189,5 @@ module.exports = {
   getUserRole,
   getemailwithtoken,
   getAllWithToKen,
+  updateRole,
 };

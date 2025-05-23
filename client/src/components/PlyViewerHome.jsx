@@ -34,6 +34,8 @@ const PlyViewer = ({ plyPath, texturePath }) => {
         loader.load(
             plyPath,
             (geometry) => {
+                geometry.computeVertexNormals();
+                geometry.center();
 
                 const texture = new THREE.TextureLoader().load(texturePath);
 
@@ -52,6 +54,7 @@ const PlyViewer = ({ plyPath, texturePath }) => {
                     map: texture,
                     specular: 0x555555,
                     shininess: 50,
+                    side: THREE.DoubleSide // Render both sides to prevent hollow appearance
                 });
 
                 const mesh = new THREE.Mesh(geometry, material);

@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Typography, Button, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import Banner from "../components/Banner";
+import MyContent from "../components/MyContent";
 const { Title, Paragraph } = Typography;
 
 const HomePage = () => {
@@ -36,6 +37,7 @@ const HomePage = () => {
     return (
         <>
             <Banner />
+            <MyContent />
             <div
                 className="home-container"
                 style={{ padding: "50px", maxWidth: "1200px", margin: "0 auto" }}

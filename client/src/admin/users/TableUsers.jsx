@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, message } from "antd";
+import { Table, message, Button, Modal, Form, Select } from "antd";
 import axios from "axios";
-import dayjs from "dayjs"; // Đảm bảo bạn đã cài: npm install dayjs
+import dayjs from "dayjs";
 
 const App = () => {
     const [userData, setUserData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [form] = Form.useForm();
 
     const fetchData = async () => {
         setLoading(true);
@@ -27,6 +30,41 @@ const App = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleUpdateRole = async (values) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:55009/api/userRouter/updateRole/${selectedUser.email}`,
+                { role: values.role }
+            );
+            if (response.data.status === "OK") {
+                message.success("Cập nhật role thành công");
+                setUserData((prev) =>
+                    prev.map((user) =>
+                        user.email === selectedUser.email ? { ...user, role: values.role } : user
+                    )
+                );
+                setIsModalOpen(false);
+                form.resetFields();
+            } else {
+                message.error("Cập nhật role thất bại");
+            }
+        } catch (error) {
+            message.error("Lỗi khi cập nhật role");
+            console.error(error);
+        }
+    };
+
+    const showModal = (user) => {
+        setSelectedUser(user);
+        setIsModalOpen(true);
+        form.setFieldsValue({ role: user.role });
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        form.resetFields();
+    };
 
     const columns = [
         {
@@ -62,20 +100,62 @@ const App = () => {
             key: "updated_at",
             render: (value) => dayjs(value).format("HH:mm:ss DD/MM/YYYY"),
         },
+        {
+            title: "Action",
+            key: "action",
+            render: (_, record) => (
+                <Button type="primary" onClick={() => showModal(record)}>
+                    Change Role
+                </Button>
+            ),
+        },
     ];
 
     return (
-        <Table
-            columns={columns}
-            dataSource={userData}
-            loading={loading}
-            rowKey="email"
-            pagination={{
-                pageSize: 5,
-                showSizeChanger: true,
-                pageSizeOptions: ["5", "10", "20"],
-            }}
-        />
+        <>
+            <Table
+                columns={columns}
+                dataSource={userData}
+                loading={loading}
+                rowKey="email"
+                pagination={{
+                    pageSize: 5,
+                    showSizeChanger: true,
+                    pageSizeOptions: ["5", "10", "20"],
+                }}
+            />
+            <Modal
+                title="Change User Role"
+                open={isModalOpen}
+                onCancel={handleCancel}
+                footer={null}
+            >
+                <Form
+                    form={form}
+                    onFinish={handleUpdateRole}
+                    layout="vertical"
+                >
+                    <Form.Item
+                        name="role"
+                        label="Role"
+                        rules={[{ required: true, message: "Please select a role" }]}
+                    >
+                        <Select>
+                            <Select.Option value="admin">Admin</Select.Option>
+                            <Select.Option value="client">Client</Select.Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            Update
+                        </Button>
+                        <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
     );
 };
 

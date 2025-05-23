@@ -11,5 +11,6 @@ router.get("/getAllWithToKen", userController.getAllWithToKen);
 router.get("/getUserRole", userController.getUserRole);
 
 router.post("/loginUser", userController.loginUser);
+router.put("/updateRole/:email", userController.updateRole);
 
 module.exports = router;
