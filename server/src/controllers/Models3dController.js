@@ -87,7 +87,7 @@ const upload = async (req, res) => {
     await runCommand(`mkdir "${baseDir}"`);
     await runCommand(`mkdir "${imagesDir}"`);
     await runCommand(
-      `ffmpeg -i "${videoPath}" -vf "fps=5" -q:v 1 "${imagesDir}\\%04d.jpg"`
+      `ffmpeg -i "${videoPath}" -vf "fps=1" -q:v 1 "${imagesDir}\\%04d.jpg"`
     );
 
     const openMvgBin = "P:\\WebLuanVan\\openMVG\\bin";
