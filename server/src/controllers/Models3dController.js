@@ -87,11 +87,11 @@ const upload = async (req, res) => {
     await runCommand(`mkdir "${baseDir}"`);
     await runCommand(`mkdir "${imagesDir}"`);
     await runCommand(
-      `ffmpeg -i "${videoPath}" -vf "fps=1" -q:v 1 "${imagesDir}\\%04d.jpg"`
+      `ffmpeg -i "${videoPath}" -vf "fps=10" -q:v 1 "${imagesDir}\\%04d.jpg"`
     );
 
-    const openMvgBin = "P:\\WebLuanVan\\openMVG\\bin";
-    const openMvsBin = "P:\\WebLuanVan\\openMVS\\bin";
+    const openMvgBin = path.join(__dirname, "..", "..", "..", "openMVG", "bin");
+    const openMvsBin = path.join(__dirname, "..", "..", "..", "openMVS", "bin");
 
     const sfmDataJson = path.join(sfmDir, "sfm_data.json");
     const sfmDataBin = path.join(reconstructionDir, "sfm_data.bin");

@@ -67,8 +67,6 @@ const ModelViewer = () => {
                     </div>
                 </Col>
                 {isMobile ? <hr /> : <></>}
-
-
                 <Col xs={24} md={8}>
                     <div style={cardStyle}>
                         <video
